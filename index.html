@@ -103,7 +103,24 @@ onclick="closeModal()">Закрыть</button>
 
 <script>
 const WORKER="https://my-kbju-api.n8mws69t88.workers.dev";
-const KEY=new Date().toISOString().slice(0,10);
+const KEY=new Date().toISOString().slice(0,10); 
+const photoBtn=document.getElementById("photoBtn");
+const modal=document.getElementById("modal");
+const photo=document.getElementById("photo");
+const grams=document.getElementById("grams");
+const analyze=document.getElementById("analyze");
+const status=document.getElementById("status");
+const result=document.getElementById("result");
+
+const kcal=document.getElementById("kcal");
+const protein=document.getElementById("protein");
+const fat=document.getElementById("fat");
+const carbs=document.getElementById("carbs");
+const bar=document.getElementById("bar");
+const foods=document.getElementById("foods");
+const products=document.getElementById("products");
+const date=document.getElementById("date");
+
 
 let data=JSON.parse(localStorage.getItem("my_kbju")||'{"days":{},"products":[]}');
 if(!data.days[KEY])data.days[KEY]=[];
