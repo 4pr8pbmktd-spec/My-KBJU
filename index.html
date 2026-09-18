@@ -177,7 +177,7 @@ ${x.kcal_100g??"—"} ккал · Б ${x.protein_100g??"—"} · Ж ${x.fat_100g
 date.textContent=new Date().toLocaleDateString("ru-RU",
 {day:"numeric",month:"long",year:"numeric"});
 
-photoBtn.onclick=function(){document.getElementById("modal").style.display="flex";};
+photoBtn.onclick=()=>modal.style.display="flex";
 
 function closeModal(){
 modal.style.display="none";
