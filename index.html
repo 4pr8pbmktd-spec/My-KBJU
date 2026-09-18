@@ -105,7 +105,7 @@ onclick="closeModal()">Закрыть</button>
 const WORKER="https://my-kbju-api.n8mws69t88.workers.dev";
 const KEY=new Date().toISOString().slice(0,10);
 
-let data=JSON.parse(localStorage.getItem("my_kbju")||'{"days":{},"products":{}}');
+let data=JSON.parse(localStorage.getItem("my_kbju")||'{"days":{},"products":[]}');
 if(!data.days[KEY])data.days[KEY]=[];
 
 function save(){
