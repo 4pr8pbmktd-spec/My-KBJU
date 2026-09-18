@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Мой КБЖУ</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f5f5f7;color:#111;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+main{max-width:520px;margin:auto;padding:18px 16px 100px}h1{font-size:30px;margin:5px 0}.date{color:#777;margin-bottom:16px}
+.card{background:#fff;border-radius:22px;padding:18px;margin:12px 0;box-shadow:0 2px 12px #0000000a}.kcal{font-size:34px;font-weight:750}
+.muted{color:#777}.bar{height:9px;background:#e9e9eb;border-radius:9px;margin:10px 0 15px}.bar>i{display:block;height:100%;width:67%;background:#111;border-radius:9px}
+.macros{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.macro{background:#f5f5f7;padding:12px;border-radius:15px}.macro b{display:block;margin-top:3px;font-size:18px}
+.meal{display:flex;justify-content:space-between;gap:12px;padding:13px 0;border-bottom:1px solid #eee}.meal:last-child{border:0}.meal small{display:block;color:#777;margin-top:3px}
+button,input{font:inherit}button{border:0;border-radius:15px;padding:13px 15px;font-weight:650}input{width:100%;padding:14px;border:1px solid #ddd;border-radius:14px;margin:8px 0}
+.primary{background:#111;color:white;width:100%}.secondary{background:#eee}.actions{display:flex;gap:8px}.actions button{flex:1}
+.fab{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);width:min(488px,calc(100% - 32px));background:#111;color:#fff;box-shadow:0 8px 30px #0004}
+.modal{position:fixed;inset:0;background:#0007;display:flex;align-items:flex-end}.sheet{background:#fff;width:min(520px,100%);margin:auto 0 0;padding:22px;border-radius:24px 24px 0 0}.hidden{display:none}
+#preview{margin-top:10px;padding:12px;background:#f5f5f7;border-radius:14px}.ok{color:#176b36;font-weight:650}
+</style>
+</head>
+<body>
+<main>
+<h1>Мой КБЖУ</h1><div class="date" id="date"></div>
+
+<section class="card">
+<div class="muted">Калории сегодня</div>
+<div class="kcal"><span id="total">0</span> <span class="muted" style="font-size:17px">/ 2000 ккал</span></div>
+<div class="bar"><i id="progress"></i></div>
+<div class="macros">
+<div class="macro"><span class="muted">Белок</span><b id="p">0 г</b></div>
+<div class="macro"><span class="muted">Жиры</span><b id="f">0 г</b></div>
+<div class="macro"><span class="muted">Угл.</span><b id="c">0 г</b></div>
+</div>
+</section>
+
+<section class="card">
+<h2 style="margin-top:0">Сегодня</h2>
+<div id="foods"><div class="muted">Пока ничего не добавлено.</div></div>
+</section>
+
+<section class="card">
+<h2 style="margin-top:0">Быстрый ввод</h2>
+<input id="name" placeholder="Продукт, например: куриная грудка">
+<input id="grams" type="number" placeholder="Количество, г">
+<button class="primary" onclick="addFood()">＋ Добавить</button>
+<div id="preview" class="hidden"></div>
+</section>
+</main>
+
+<button class="fab" onclick="openModal()">📷 Добавить через фото / голос</button>
+
+<div class="modal hidden" id="modal" onclick="if(event.target===this)closeModal()">
+<div class="sheet">
+<h2>Добавить еду</h2>
+<div class="actions">
+<button class="secondary" onclick="choosePhoto()">📷 Фото</button>
+<button class="secondary" onclick="voice()">🎤 Голос</button>
+</div>
+<input id="photo" type="file" accept="image/*" capture="environment" class="hidden" onchange="photoChosen()">
+<div id="photoText" class="muted" style="margin:12px 0">В будущей версии фото этикетки будет анализировать GPT.</div>
+<button class="secondary" style="width:100%" onclick="closeModal()">Закрыть</button>
+</div></div>
+
+<script>
+let foods=JSON.parse(localStorage.getItem('kbjuFoods')||'[]');
+const kcalPer100={}; // база продуктов подключим на следующем этапе
+document.getElementById('date').textContent=new Intl.DateTimeFormat('ru-RU',{day:'numeric',month:'long',year:'numeric'}).format(new Date());
+
+function render(){
+ let k=0,p=0,f=0,c=0;
+ foods.forEach(x=>{k+=x.k;p+=x.p;f+=x.f;c+=x.c});
+ document.getElementById('total').textContent=Math.round(k);
+ document.getElementById('p').textContent=p.toFixed(1)+' г';
+ document.getElementById('f').textContent=f.toFixed(1)+' г';
+ document.getElementById('c').textContent=c.toFixed(1)+' г';
+ document.getElementById('progress').style.width=Math.min(100,k/2000*100)+'%';
+ document.getElementById('foods').innerHTML=foods.length?foods.map(x=>`<div class="meal"><div>🍽️ ${x.name}<small>${x.g} г · Б ${x.p.toFixed(1)} · Ж ${x.f.toFixed(1)} · У ${x.c.toFixed(1)}</small></div><b>${Math.round(x.k)} ккал</b></div>`).join(''):'<div class="muted">Пока ничего не добавлено.</div>';
+}
+function addFood(){
+ const name=document.getElementById('name').value.trim(),g=Number(document.getElementById('grams').value);
+ if(!name||!g){alert('Укажи продукт и количество.');return}
+ document.getElementById('preview').classList.remove('hidden');
+ document.getElementById('preview').innerHTML='<b>Готово для GPT</b><br>'+name+', '+g+' г<br><span class="muted">На следующем этапе здесь появится реальный расчёт КБЖУ по базе продукта/этикетке.</span>';
+}
+function openModal(){document.getElementById('modal').classList.remove('hidden')}
+function closeModal(){document.getElementById('modal').classList.add('hidden')}
+function choosePhoto(){document.getElementById('photo').click()}
+function photoChosen(){document.getElementById('photoText').textContent='Фото выбрано. Следующий этап — передать его в GPT и распознать этикетку.'}
+function voice(){alert('Голосовой ввод подключим вместе с GPT на следующем этапе.')}
+render();
+</script>
+</body></html>
