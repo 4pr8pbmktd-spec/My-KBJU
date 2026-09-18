@@ -25,7 +25,7 @@ main{
 }
 
 h1{margin:4px 0;font-size:28px}
-h2{margin-top:0}
+h2{margin:0 0 14px}
 
 .date{
   color:#777;
@@ -104,7 +104,7 @@ button{
 }
 
 button:disabled{
-  opacity:.6
+  opacity:.55
 }
 
 .actions{
@@ -167,12 +167,8 @@ input{
   padding:18px 16px 28px
 }
 
-.sheet h2{
-  margin:0 0 14px
-}
-
 .status{
-  min-height:22px;
+  min-height:24px;
   color:#666;
   margin:12px 0
 }
@@ -180,12 +176,8 @@ input{
 .result{
   display:none;
   background:#f3f4f7;
-  border-radius:15px;
+  border-radius:16px;
   padding:14px
-}
-
-.result b{
-  font-size:18px
 }
 
 .field{
@@ -205,8 +197,26 @@ input{
   gap:9px
 }
 
-.small{
-  padding:11px
+.ocrbox{
+  display:none;
+  margin-top:12px;
+  background:#f8f8fa;
+  border-radius:14px;
+  padding:12px;
+  font-size:12px;
+  color:#666;
+  white-space:pre-wrap;
+  max-height:160px;
+  overflow:auto
+}
+
+.warning{
+  background:#fff4d6;
+  color:#725500;
+  padding:11px;
+  border-radius:13px;
+  margin-top:10px;
+  font-size:14px
 }
 </style>
 </head>
@@ -216,7 +226,6 @@ input{
 <main>
 
 <h1>Мой КБЖУ</h1>
-
 <div class="date" id="date"></div>
 
 <section class="card">
@@ -248,6 +257,7 @@ input{
 </div>
 
 </div>
+
 </section>
 
 
@@ -269,9 +279,7 @@ input{
 <h2>Сегодня</h2>
 
 <div id="foods">
-<div class="empty">
-Пока ничего не добавлено
-</div>
+<div class="empty">Пока ничего не добавлено</div>
 </div>
 
 </section>
@@ -313,9 +321,7 @@ style="width:100%;margin-top:10px"
 <h2>Мои продукты</h2>
 
 <div id="products">
-<div class="empty">
-Сохранённых продуктов пока нет
-</div>
+<div class="empty">Сохранённых продуктов пока нет</div>
 </div>
 
 </section>
@@ -359,16 +365,10 @@ style="width:100%;margin-top:10px"
 </button>
 
 
-<div
-class="status"
-id="status"
-></div>
+<div class="status" id="status"></div>
 
 
-<div
-class="result"
-id="result"
->
+<div class="result" id="result">
 
 <div class="field">
 
@@ -393,7 +393,6 @@ step="0.1"
 
 </div>
 
-
 <div class="field">
 
 <label>Белки на 100 г</label>
@@ -405,7 +404,6 @@ step="0.1"
 >
 
 </div>
-
 
 <div class="field">
 
@@ -419,7 +417,6 @@ step="0.1"
 
 </div>
 
-
 <div class="field">
 
 <label>Углеводы на 100 г</label>
@@ -432,6 +429,11 @@ step="0.1"
 
 </div>
 
+</div>
+
+
+<div class="warning">
+Проверь значения с этикеткой перед сохранением. OCR может ошибаться.
 </div>
 
 
@@ -455,10 +457,16 @@ style="width:100%;margin-top:10px"
 </div>
 
 
+<details style="margin-top:12px">
+<summary>Показать распознанный текст</summary>
+<div class="ocrbox" id="ocrbox"></div>
+</details>
+
+
 <button
 class="secondary"
 id="closeBtn"
-style="width:100%;margin-top:10px"
+style="width:100%;margin-top:12px"
 >
 Закрыть
 </button>
@@ -487,6 +495,7 @@ const grams=document.getElementById("grams");
 const analyze=document.getElementById("analyze");
 const status=document.getElementById("status");
 const result=document.getElementById("result");
+const ocrbox=document.getElementById("ocrbox");
 
 const rName=document.getElementById("rName");
 const rKcal=document.getElementById("rKcal");
@@ -602,14 +611,14 @@ function number(value){
 }
 
 
-function calc(value,grams){
+function calc(value,g){
 
-  if(value==null || value===""){
+  if(value===null || value===""){
     return null;
   }
 
   return Number(
-    (number(value)*grams/100).toFixed(1)
+    (number(value)*g/100).toFixed(1)
   );
 
 }
@@ -673,24 +682,19 @@ function render(){
 
         return `
         <div class="food">
-
           <div>
-
             <b>${esc(item.name)}</b>
-
             <span class="muted">
               ${item.grams} г ·
               Б ${item.protein ?? "—"} ·
               Ж ${item.fat ?? "—"} ·
               У ${item.carbs ?? "—"}
             </span>
-
           </div>
 
           <strong>
             ${item.kcal ?? "—"} ккал
           </strong>
-
         </div>
         `;
 
@@ -747,6 +751,8 @@ function openModal(){
 
   result.style.display="none";
 
+  ocrbox.textContent="";
+
 }
 
 
@@ -757,6 +763,8 @@ function closeModal(){
   status.textContent="";
 
   result.style.display="none";
+
+  ocrbox.textContent="";
 
   photo.value="";
   grams.value="";
@@ -776,7 +784,9 @@ closeBtn.addEventListener(
 );
 
 
-/* Голосовой ввод */
+/* =========================
+   ГОЛОС
+========================= */
 
 voiceBtn.addEventListener(
   "click",
@@ -796,6 +806,7 @@ voiceBtn.addEventListener(
 
     }
 
+
     const recognition=
       new SpeechRecognition();
 
@@ -805,19 +816,25 @@ voiceBtn.addEventListener(
 
     recognition.maxAlternatives=1;
 
+
     recognition.onstart=function(){
 
       voiceBtn.textContent="🎤 Слушаю...";
 
     };
 
+
     recognition.onresult=function(event){
 
       const text=
         event.results[0][0].transcript;
 
+
       const match=
-        text.match(/(.+?)\s+(\d+(?:[.,]\d+)?)\s*(?:г|грамм)/i);
+        text.match(
+          /(.+?)\s+(\d+(?:[.,]\d+)?)\s*(?:г|грамм)/i
+        );
+
 
       if(match){
 
@@ -835,11 +852,13 @@ voiceBtn.addEventListener(
 
     };
 
+
     recognition.onerror=function(){
 
       alert("Не удалось распознать голос.");
 
     };
+
 
     recognition.onend=function(){
 
@@ -847,13 +866,16 @@ voiceBtn.addEventListener(
 
     };
 
+
     recognition.start();
 
   }
 );
 
 
-/* Быстрый ввод */
+/* =========================
+   БЫСТРЫЙ ВВОД
+========================= */
 
 manualBtn.addEventListener(
   "click",
@@ -865,6 +887,7 @@ manualBtn.addEventListener(
     const g=
       Number(manualGrams.value);
 
+
     if(!name){
 
       alert("Введите название продукта.");
@@ -872,6 +895,7 @@ manualBtn.addEventListener(
       return;
 
     }
+
 
     if(!g || g<=0){
 
@@ -896,7 +920,7 @@ manualBtn.addEventListener(
     if(!saved){
 
       alert(
-        "Сначала добавьте этот продукт через фото этикетки."
+        "Сначала сохраните этот продукт через фото."
       );
 
       return;
@@ -932,135 +956,651 @@ manualBtn.addEventListener(
 );
 
 
-/* Поиск числового значения */
+/* =========================
+   ЧИСЛА
+========================= */
 
-function findNumber(text){
+function cleanNumber(value){
+
+  if(value===null || value===undefined){
+    return null;
+  }
+
+  let s=String(value)
+    .replace(/[Oo]/g,"0")
+    .replace(/[Il]/g,"1")
+    .replace(/,/g,".")
+    .trim();
+
 
   const match=
-    text.match(/(\d+(?:[.,]\d+)?)/);
+    s.match(/\d+(?:\.\d+)?/);
 
   if(!match){
     return null;
   }
 
-  return Number(
-    match[1].replace(",", ".")
-  );
+  const n=Number(match[0]);
+
+  return Number.isFinite(n) ? n : null;
 
 }
 
 
-/* Поиск КБЖУ */
+/* =========================
+   ПОИСК ЧИСЕЛ
+========================= */
 
-function findNutrition(text){
+function numbersFromText(text){
 
-  const lines=
-    text
-      .split(/\n+/)
-      .map(function(x){
-        return x.trim();
-      })
-      .filter(Boolean);
+  const matches=
+    String(text)
+      .replace(/,/g,".")
+      .match(/\d+(?:\.\d+)?/g);
 
+  if(!matches){
+    return [];
+  }
 
-  let resultData={
-    kcal:null,
-    protein:null,
-    fat:null,
-    carbs:null
-  };
+  return matches
+    .map(Number)
+    .filter(function(n){
+      return Number.isFinite(n);
+    });
 
-
-  for(const line of lines){
-
-    const lower=line.toLowerCase();
-
-    const value=findNumber(line);
-
-    if(value===null){
-      continue;
-    }
+}
 
 
-    if(
-      resultData.kcal===null &&
-      (
-        lower.includes("kcal") ||
-        lower.includes("ккал")
-      )
-    ){
+/* =========================
+   ПОИСК ЧИСЛА РЯДОМ С СЛОВОМ
+========================= */
 
-      resultData.kcal=value;
+function numberNearKeyword(lines,index,keywords){
 
-    }
+  const current=lines[index] || "";
+
+  const lower=current.toLowerCase();
 
 
-    if(
-      resultData.protein===null &&
-      (
-        lower.includes("protein") ||
-        lower.includes("eiweiß") ||
-        lower.includes("eiweiss") ||
-        lower.includes("белк")
-      )
-    ){
+  for(const keyword of keywords){
 
-      resultData.protein=value;
+    const pos=lower.indexOf(keyword);
 
-    }
+    if(pos!==-1){
 
+      const after=current.slice(
+        pos+keyword.length
+      );
 
-    if(
-      resultData.fat===null &&
-      (
-        lower.includes("fat") ||
-        lower.includes("fett") ||
-        lower.includes("жир")
-      )
-    ){
+      const nums=numbersFromText(after);
 
-      resultData.fat=value;
+      if(nums.length){
 
-    }
+        return nums[0];
 
-
-    if(
-      resultData.carbs===null &&
-      (
-        lower.includes("carbohydrate") ||
-        lower.includes("kohlenhydrate") ||
-        lower.includes("carbs") ||
-        lower.includes("углевод")
-      )
-    ){
-
-      resultData.carbs=value;
+      }
 
     }
 
   }
 
 
-  return resultData;
+  for(let step=1;step<=2;step++){
+
+    const line=lines[index+step];
+
+    if(!line){
+      continue;
+    }
+
+    const nums=numbersFromText(line);
+
+    if(nums.length){
+
+      return nums[0];
+
+    }
+
+  }
+
+
+  return null;
 
 }
 
 
-/* Распознавание фото */
+/* =========================
+   ЭНЕРГИЯ
+========================= */
+
+function findKcal(lines){
+
+  const kcalWords=[
+    "kcal",
+    "ккал"
+  ];
+
+
+  for(let i=0;i<lines.length;i++){
+
+    const lower=lines[i].toLowerCase();
+
+
+    if(
+      lower.includes("kcal") ||
+      lower.includes("ккал")
+    ){
+
+      const after=
+        lines[i]
+          .slice(
+            Math.max(
+              0,
+              Math.max(
+                lower.indexOf("kcal"),
+                lower.indexOf("ккал")
+              )
+            )
+          );
+
+
+      const nums=
+        numbersFromText(after);
+
+
+      if(nums.length){
+
+        return nums[0];
+
+      }
+
+
+      for(let j=i-1;j>=Math.max(0,i-2);j--){
+
+        const nums2=
+          numbersFromText(lines[j]);
+
+        if(nums2.length){
+
+          return nums2[nums2.length-1];
+
+        }
+
+      }
+
+    }
+
+  }
+
+
+  /* Иногда OCR пишет только Energie и число */
+
+  for(let i=0;i<lines.length;i++){
+
+    const lower=lines[i].toLowerCase();
+
+
+    if(
+      lower.includes("energie") ||
+      lower.includes("energy")
+    ){
+
+      const nums=
+        numbersFromText(lines[i]);
+
+      for(const n of nums){
+
+        if(n>20 && n<1000){
+
+          return n;
+
+        }
+
+      }
+
+
+      const next=
+        numbersFromText(lines[i+1] || "");
+
+      for(const n of next){
+
+        if(n>20 && n<1000){
+
+          return n;
+
+        }
+
+      }
+
+    }
+
+  }
+
+
+  return null;
+
+}
+
+
+/* =========================
+   МАКРОСЫ
+========================= */
+
+function findMacro(lines,keywords){
+
+  for(let i=0;i<lines.length;i++){
+
+    const lower=lines[i].toLowerCase();
+
+
+    let found=false;
+
+    for(const word of keywords){
+
+      if(lower.includes(word)){
+
+        found=true;
+        break;
+
+      }
+
+    }
+
+
+    if(!found){
+      continue;
+    }
+
+
+    const value=
+      numberNearKeyword(
+        lines,
+        i,
+        keywords
+      );
+
+
+    if(
+      value!==null &&
+      value>=0 &&
+      value<=100
+    ){
+
+      return value;
+
+    }
+
+  }
+
+
+  return null;
+
+}
+
+
+/* =========================
+   НАЗВАНИЕ
+========================= */
+
+function findProductName(lines){
+
+  const forbidden=[
+
+    "energie",
+    "energy",
+    "kcal",
+    "kj",
+    "protein",
+    "eiweiß",
+    "eiweiss",
+    "fett",
+    "fat",
+    "kohlenhydrate",
+    "carbohydrate",
+    "carbs",
+    "zucker",
+    "sugar",
+    "davon",
+    "gesättigte",
+    "saturates",
+    "salt",
+    "salz",
+    "sodium",
+    "белк",
+    "жир",
+    "углевод",
+    "калор"
+
+  ];
+
+
+  for(const original of lines){
+
+    const line=
+      original.trim();
+
+
+    if(line.length<3 || line.length>70){
+      continue;
+    }
+
+
+    const lower=
+      line.toLowerCase();
+
+
+    let bad=false;
+
+
+    for(const word of forbidden){
+
+      if(lower.includes(word)){
+
+        bad=true;
+        break;
+
+      }
+
+    }
+
+
+    if(bad){
+      continue;
+    }
+
+
+    if(
+      /^\d+$/.test(line) ||
+      /^[|Il1_\- ]+$/.test(line)
+    ){
+
+      continue;
+
+    }
+
+
+    const letters=
+      line.match(/[A-Za-zА-Яа-яÄÖÜäöüß]/g);
+
+
+    if(letters && letters.length>=3){
+
+      return line;
+
+    }
+
+  }
+
+
+  return "Мой продукт";
+
+}
+
+
+/* =========================
+   АНАЛИЗ ТЕКСТА OCR
+========================= */
+
+function analyzeOCRText(text){
+
+  const normalized=
+    String(text)
+      .replace(/\r/g,"")
+      .replace(/[ \t]+/g," ")
+      .trim();
+
+
+  const lines=
+    normalized
+      .split(/\n+/)
+      .map(function(line){
+
+        return line.trim();
+
+      })
+      .filter(Boolean);
+
+
+  const nutrition={
+
+    kcal:findKcal(lines),
+
+    protein:findMacro(
+      lines,
+      [
+        "protein",
+        "eiweiß",
+        "eiweiss",
+        "белк"
+      ]
+    ),
+
+    fat:findMacro(
+      lines,
+      [
+        "fett",
+        "fat",
+        "жир"
+      ]
+    ),
+
+    carbs:findMacro(
+      lines,
+      [
+        "kohlenhydrate",
+        "carbohydrate",
+        "carbohydrates",
+        "carbs",
+        "углевод"
+      ]
+    )
+
+  };
+
+
+  return {
+
+    name:findProductName(lines),
+
+    nutrition:nutrition,
+
+    lines:lines
+
+  };
+
+}
+
+
+/* =========================
+   УЛУЧШЕНИЕ ФОТО
+========================= */
+
+function preprocessImage(file){
+
+  return new Promise(
+    function(resolve,reject){
+
+      const reader=
+        new FileReader();
+
+
+      reader.onload=function(){
+
+        const img=
+          new Image();
+
+
+        img.onload=function(){
+
+          let width=img.width;
+          let height=img.height;
+
+
+          const max=1800;
+
+
+          if(
+            Math.max(width,height)>max
+          ){
+
+            const scale=
+              max/
+              Math.max(width,height);
+
+            width=
+              Math.round(width*scale);
+
+            height=
+              Math.round(height*scale);
+
+          }
+
+
+          const canvas=
+            document.createElement("canvas");
+
+          canvas.width=width;
+          canvas.height=height;
+
+
+          const ctx=
+            canvas.getContext("2d");
+
+
+          ctx.drawImage(
+            img,
+            0,
+            0,
+            width,
+            height
+          );
+
+
+          /* Улучшение контраста */
+
+          const imageData=
+            ctx.getImageData(
+              0,
+              0,
+              width,
+              height
+            );
+
+
+          const data=imageData.data;
+
+
+          for(
+            let i=0;
+            i<data.length;
+            i+=4
+          ){
+
+            const r=data[i];
+            const g=data[i+1];
+            const b=data[i+2];
+
+
+            const gray=
+              0.299*r+
+              0.587*g+
+              0.114*b;
+
+
+            const contrast=
+              ((gray-128)*1.25)+128;
+
+
+            data[i]=Math.max(
+              0,
+              Math.min(255,contrast)
+            );
+
+            data[i+1]=Math.max(
+              0,
+              Math.min(255,contrast)
+            );
+
+            data[i+2]=Math.max(
+              0,
+              Math.min(255,contrast)
+            );
+
+          }
+
+
+          ctx.putImageData(
+            imageData,
+            0,
+            0
+          );
+
+
+          resolve(
+            canvas.toDataURL(
+              "image/jpeg",
+              0.9
+            )
+          );
+
+        };
+
+
+        img.onerror=function(){
+
+          reject(
+            new Error(
+              "Не удалось обработать фотографию."
+            )
+          );
+
+        };
+
+
+        img.src=reader.result;
+
+      };
+
+
+      reader.onerror=function(){
+
+        reject(
+          new Error(
+            "Не удалось прочитать фотографию."
+          )
+        );
+
+      };
+
+
+      reader.readAsDataURL(file);
+
+    }
+  );
+
+}
+
+
+/* =========================
+   OCR
+========================= */
 
 analyze.addEventListener(
   "click",
   async function(){
 
-    const file=photo.files[0];
+    const file=
+      photo.files[0];
 
-    const g=Number(grams.value);
+
+    const g=
+      Number(grams.value);
 
 
     if(!file){
 
       status.textContent=
-        "Сначала сфотографируйте этикетку.";
+        "Сначала выберите фотографию.";
 
       return;
 
@@ -1085,15 +1625,33 @@ analyze.addEventListener(
     try{
 
       status.textContent=
-        "⏳ Распознаю текст на фото...";
+        "⏳ Подготавливаю фотографию...";
 
 
-      const ocr=
-        await Tesseract.recognize(
-          file,
-          "rus+eng+deu",
+      const image=
+        await preprocessImage(file);
+
+
+      status.textContent=
+        "⏳ Загружаю OCR-модуль...";
+
+
+      const worker=
+        await Tesseract.createWorker(
+          ["rus","eng","deu"],
+          1,
           {
             logger:function(info){
+
+              if(
+                info.status==="loading language model"
+              ){
+
+                status.textContent=
+                  "⏳ Загружаю языковой модуль...";
+
+              }
+
 
               if(
                 info.status==="recognizing text" &&
@@ -1102,7 +1660,9 @@ analyze.addEventListener(
 
                 status.textContent=
                   "⏳ Распознаю: "+
-                  Math.round(info.progress*100)+
+                  Math.round(
+                    info.progress*100
+                  )+
                   "%";
 
               }
@@ -1112,7 +1672,20 @@ analyze.addEventListener(
         );
 
 
-      const text=ocr.data.text;
+      const ocr=
+        await worker.recognize(image);
+
+
+      await worker.terminate();
+
+
+      const text=
+        ocr.data.text || "";
+
+
+      ocrbox.textContent=
+        text ||
+        "OCR не получил текст.";
 
 
       if(!text.trim()){
@@ -1124,40 +1697,66 @@ analyze.addEventListener(
       }
 
 
-      const nutrition=
-        findNutrition(text);
+      status.textContent=
+        "⏳ Ищу КБЖУ на этикетке...";
 
 
-      let productName=
-        linesFirstProductName(text);
+      const parsed=
+        analyzeOCRText(text);
 
 
       rName.value=
-        productName || "Мой продукт";
+        parsed.name;
+
 
       rKcal.value=
-        nutrition.kcal ?? "";
+        parsed.nutrition.kcal ?? "";
+
 
       rProtein.value=
-        nutrition.protein ?? "";
+        parsed.nutrition.protein ?? "";
+
 
       rFat.value=
-        nutrition.fat ?? "";
+        parsed.nutrition.fat ?? "";
+
 
       rCarbs.value=
-        nutrition.carbs ?? "";
+        parsed.nutrition.carbs ?? "";
 
 
       result.style.display="block";
 
 
-      status.textContent=
-        "✅ Фото обработано. Проверь значения перед сохранением.";
+      const foundCount=[
+        parsed.nutrition.kcal,
+        parsed.nutrition.protein,
+        parsed.nutrition.fat,
+        parsed.nutrition.carbs
+      ].filter(function(v){
+
+        return v!==null;
+
+      }).length;
+
+
+      if(foundCount===4){
+
+        status.textContent=
+          "✅ КБЖУ найдено. Проверь значения перед сохранением.";
+
+      }else{
+
+        status.textContent=
+          "⚠️ Часть значений не найдена. Проверь этикетку и при необходимости введи их вручную.";
+
+      }
 
     }catch(error){
 
       status.textContent=
-        "❌ "+error.message;
+        "❌ Ошибка: "+
+        (error.message || error);
 
     }finally{
 
@@ -1169,76 +1768,54 @@ analyze.addEventListener(
 );
 
 
-/* Название продукта */
+/* =========================
+   ПОЛУЧИТЬ ПРОДУКТ
+========================= */
 
-function linesFirstProductName(text){
+function getRecognizedProduct(){
 
-  const lines=
-    text
-      .split(/\n+/)
-      .map(function(x){
-        return x.trim();
-      })
-      .filter(Boolean);
+  function fieldValue(input){
 
-
-  for(const line of lines){
-
-    const lower=line.toLowerCase();
-
-
-    if(
-      line.length>=3 &&
-      line.length<=80 &&
-      !/\d{2,}/.test(line) &&
-      !lower.includes("kcal") &&
-      !lower.includes("ккал") &&
-      !lower.includes("protein") &&
-      !lower.includes("eiweiß") &&
-      !lower.includes("fett") &&
-      !lower.includes("kohlenhydrate") &&
-      !lower.includes("белк") &&
-      !lower.includes("жир") &&
-      !lower.includes("углевод")
-    ){
-
-      return line;
-
+    if(input.value===""){
+      return null;
     }
+
+    const n=
+      Number(input.value);
+
+    return Number.isFinite(n)
+      ? n
+      : null;
 
   }
 
 
-  return "";
-
-}
-
-
-/* Сохранение распознанного продукта */
-
-function getRecognizedProduct(){
-
   return {
 
     name:
-      rName.value.trim() || "Мой продукт",
+      rName.value.trim() ||
+      "Мой продукт",
 
     kcal_100g:
-      rKcal.value==="" ? null : Number(rKcal.value),
+      fieldValue(rKcal),
 
     protein_100g:
-      rProtein.value==="" ? null : Number(rProtein.value),
+      fieldValue(rProtein),
 
     fat_100g:
-      rFat.value==="" ? null : Number(rFat.value),
+      fieldValue(rFat),
 
     carbs_100g:
-      rCarbs.value==="" ? null : Number(rCarbs.value)
+      fieldValue(rCarbs)
 
   };
 
 }
 
+
+/* =========================
+   СОХРАНИТЬ
+========================= */
 
 saveResult.addEventListener(
   "click",
@@ -1248,18 +1825,39 @@ saveResult.addEventListener(
       getRecognizedProduct();
 
 
+    if(
+      p.kcal_100g===null &&
+      p.protein_100g===null &&
+      p.fat_100g===null &&
+      p.carbs_100g===null
+    ){
+
+      alert(
+        "Не найдено ни одного значения КБЖУ. Введите значения вручную."
+      );
+
+      return;
+
+    }
+
+
     data.products[p.name]=p;
 
     save();
 
     render();
 
+
     status.textContent=
-      "✅ Продукт сохранён в «Мои продукты».";
+      "✅ Продукт сохранён.";
 
   }
 );
 
+
+/* =========================
+   СОХРАНИТЬ + ДНЕВНИК
+========================= */
 
 addResult.addEventListener(
   "click",
@@ -1268,8 +1866,20 @@ addResult.addEventListener(
     const p=
       getRecognizedProduct();
 
+
     const g=
       Number(grams.value);
+
+
+    if(!g || g<=0){
+
+      alert(
+        "Укажите количество граммов."
+      );
+
+      return;
+
+    }
 
 
     data.products[p.name]=p;
@@ -1281,13 +1891,25 @@ addResult.addEventListener(
 
       grams:g,
 
-      kcal:calc(p.kcal_100g,g),
+      kcal:calc(
+        p.kcal_100g,
+        g
+      ),
 
-      protein:calc(p.protein_100g,g),
+      protein:calc(
+        p.protein_100g,
+        g
+      ),
 
-      fat:calc(p.fat_100g,g),
+      fat:calc(
+        p.fat_100g,
+        g
+      ),
 
-      carbs:calc(p.carbs_100g,g)
+      carbs:calc(
+        p.carbs_100g,
+        g
+      )
 
     });
 
@@ -1301,6 +1923,10 @@ addResult.addEventListener(
   }
 );
 
+
+/* =========================
+   ДАТА
+========================= */
 
 date.textContent=
   new Date().toLocaleDateString(
