@@ -230,4 +230,291 @@ function addRecognized(){
 function toggleRaw(){const x=document.getElementById("rawText");x.style.display=x.style.display==="none"?"block":"none"}
 try{render()}catch(e){console.error("My-KBJU init error:",e);const s=document.getElementById("toast");if(s){s.textContent="Приложение запущено. Нажмите Фото или Профиль.";s.style.display="block";setTimeout(()=>s.style.display="none",3500)}}
 </script>
+
+<script>
+/* ================================
+   Мой КБЖУ V17.4 — FIX кнопок
+   ================================ */
+
+(function () {
+  "use strict";
+
+  /* ---------- Загрузка библиотек только при необходимости ---------- */
+
+  const loaded = {};
+
+  function loadScriptOnce(src, globalName, timeout = 30000) {
+    if (window[globalName]) {
+      return Promise.resolve(window[globalName]);
+    }
+
+    if (loaded[src]) {
+      return loaded[src];
+    }
+
+    loaded[src] = new Promise(function (resolve, reject) {
+      const script = document.createElement("script");
+      let finished = false;
+
+      const timer = setTimeout(function () {
+        if (finished) return;
+        finished = true;
+        script.remove();
+        reject(new Error("Таймаут загрузки библиотеки"));
+      }, timeout);
+
+      script.src = src;
+      script.async = true;
+
+      script.onload = function () {
+        if (finished) return;
+        finished = true;
+        clearTimeout(timer);
+
+        if (window[globalName]) {
+          resolve(window[globalName]);
+        } else {
+          reject(new Error("Библиотека " + globalName + " не загрузилась"));
+        }
+      };
+
+      script.onerror = function () {
+        if (finished) return;
+        finished = true;
+        clearTimeout(timer);
+        reject(new Error("Ошибка загрузки библиотеки " + globalName));
+      };
+
+      document.head.appendChild(script);
+    });
+
+    return loaded[src];
+  }
+
+  window.ensureTesseract = function () {
+    return loadScriptOnce(
+      "https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js",
+      "Tesseract"
+    );
+  };
+
+  window.ensureHeic = function () {
+    return loadScriptOnce(
+      "https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js",
+      "heic2any"
+    );
+  };
+
+  window.ensureUtif = function () {
+    return loadScriptOnce(
+      "https://cdn.jsdelivr.net/npm/utif@3.1.0/UTIF.min.js",
+      "UTIF"
+    );
+  };
+
+
+  /* ---------- Безопасное подключение кнопок ---------- */
+
+  function wire(id, fn) {
+    const element = document.getElementById(id);
+
+    if (!element) {
+      console.warn("Кнопка не найдена:", id);
+      return;
+    }
+
+    element.addEventListener("click", function (event) {
+      event.preventDefault();
+
+      try {
+        const result = fn();
+
+        if (result && typeof result.catch === "function") {
+          result.catch(function (error) {
+            console.error("Ошибка кнопки " + id, error);
+          });
+        }
+      } catch (error) {
+        console.error("Ошибка кнопки " + id, error);
+      }
+    });
+  }
+
+
+  /* ---------- Подключаем ВСЕ кнопки ---------- */
+
+  function connectButtons() {
+
+    /* Верхние кнопки */
+    wire("profileTopBtn", function () {
+      openProfile();
+    });
+
+    wire("photoTopBtn", function () {
+      openPhoto();
+    });
+
+    wire("manualTopBtn", function () {
+      openManual();
+    });
+
+
+    /* Нижнее меню */
+    wire("scrollTopBtn", function () {
+      scrollTopApp();
+    });
+
+    wire("photoBottomBtn", function () {
+      openPhoto();
+    });
+
+    wire("profileBottomBtn", function () {
+      openProfile();
+    });
+
+
+    /* Профиль */
+    wire("closeProfileBtn", function () {
+      closeProfile();
+    });
+
+    wire("saveProfileBtn", function () {
+      saveProfile();
+    });
+
+
+    /* Вручную */
+    wire("closeManualBtn", function () {
+      closeManual();
+    });
+
+    wire("addManualBtn", function () {
+      addManual();
+    });
+
+
+    /* Фото */
+    wire("closePhotoBtn", function () {
+      closePhoto();
+    });
+
+    wire("recognizeBtn", function () {
+      return recognizeProduct();
+    });
+
+    wire("addRecognizedBtn", function () {
+      addRecognized();
+    });
+
+    wire("toggleRawBtn", function () {
+      toggleRaw();
+    });
+
+
+    /* Измерения */
+    wire("saveMeasurementBtn", function () {
+      saveMeasurement();
+    });
+
+
+    /* ---------- Удаление продуктов ---------- */
+
+    document.addEventListener("click", function (event) {
+      const button = event.target.closest("[data-remove-index]");
+
+      if (button) {
+        const index = Number(button.dataset.removeIndex);
+
+        if (Number.isFinite(index)) {
+          removeFood(index);
+        }
+      }
+    });
+
+
+    /* ---------- Клик по затемнению модального окна ---------- */
+
+    const photoModal = document.getElementById("photoModal");
+    const profileModal = document.getElementById("profileModal");
+    const manualModal = document.getElementById("manualModal");
+
+    if (photoModal) {
+      photoModal.addEventListener("click", function (event) {
+        if (event.target === photoModal) {
+          closePhoto();
+        }
+      });
+    }
+
+    if (profileModal) {
+      profileModal.addEventListener("click", function (event) {
+        if (event.target === profileModal) {
+          closeProfile();
+        }
+      });
+    }
+
+    if (manualModal) {
+      manualModal.addEventListener("click", function (event) {
+        if (event.target === manualModal) {
+          closeManual();
+        }
+      });
+    }
+
+
+    /* ---------- Сохранение бюджета ---------- */
+
+    const planKcal = document.getElementById("planKcal");
+    const planDays = document.getElementById("planDays");
+
+    if (planKcal) {
+      planKcal.addEventListener("change", function () {
+        updatePlan(true);
+      });
+    }
+
+    if (planDays) {
+      planDays.addEventListener("change", function () {
+        updatePlan(true);
+      });
+    }
+
+
+    /* ---------- Первый рендер ---------- */
+
+    try {
+      render();
+    } catch (error) {
+      console.error("Ошибка запуска Мой КБЖУ:", error);
+
+      const toastElement = document.getElementById("toast");
+
+      if (toastElement) {
+        toastElement.textContent =
+          "Приложение запущено. Попробуйте Профиль или Фото.";
+        toastElement.style.display = "block";
+
+        setTimeout(function () {
+          toastElement.style.display = "none";
+        }, 3500);
+      }
+    }
+
+    console.log("Мой КБЖУ V17.4: кнопки подключены");
+  }
+
+
+  /* ---------- Запуск после загрузки страницы ---------- */
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", connectButtons);
+  } else {
+    connectButtons();
+  }
+
+})();
+
+</script>
 </body>
+</html>
