@@ -1,338 +1,117 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
 <title>Мой КБЖУ</title>
-
 <style>
 *{box-sizing:border-box}
-
-body{
-  margin:0;
-  background:#f3f4f6;
-  color:#171717;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif
-}
-
-header{
-  background:#111827;
-  color:#fff;
-  padding:22px 18px 18px;
-  position:sticky;
-  top:0;
-  z-index:10
-}
-
-header h1{margin:0;font-size:27px}
-header p{margin:5px 0 0;color:#cbd5e1;font-size:14px}
-
-main{
-  max-width:760px;
-  margin:auto;
-  padding:16px 14px 50px
-}
-
-.card{
-  background:#fff;
-  border-radius:22px;
-  padding:18px;
-  margin:12px 0;
-  box-shadow:0 3px 15px #0000000c
-}
-
-h2{font-size:21px;margin:0 0 14px}
-h3{font-size:18px;margin:0 0 10px}
-
-label{
-  display:block;
-  font-weight:700;
-  margin:13px 0 7px
-}
-
-input,select{
-  width:100%;
-  padding:14px 15px;
-  border:1px solid #d1d5db;
-  border-radius:14px;
-  font-size:17px;
-  background:#fff
-}
-
-button{
-  border:0;
-  border-radius:15px;
-  padding:15px 17px;
-  font-size:17px;
-  font-weight:800;
-  cursor:pointer
-}
-
-.primary{
-  background:#111;
-  color:#fff;
-  width:100%
-}
-
-.secondary{
-  background:#e5e7eb;
-  color:#111
-}
-
-.grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px
-}
-
-@media(max-width:520px){
-  .grid{grid-template-columns:1fr}
-}
-
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:#f3f4f6;color:#111827}
+.app{max-width:760px;margin:auto;padding:16px 14px 90px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+h1{font-size:28px;margin:0}
+.sub{color:#6b7280;font-size:13px}
+.card{background:white;border-radius:18px;padding:16px;margin:12px 0;box-shadow:0 2px 12px #0000000b}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+label{display:block;font-size:13px;color:#4b5563;margin-bottom:5px}
+input,select,button{font:inherit}
+input,select{width:100%;padding:12px;border:1px solid #d1d5db;border-radius:12px;background:white}
+button{border:0;border-radius:12px;padding:12px 14px;font-weight:700;cursor:pointer}
+.primary{background:#111827;color:white}
+.secondary{background:#e5e7eb;color:#111827}
+.big{font-size:34px;font-weight:800}
 .muted{color:#6b7280}
-.big{font-size:30px;font-weight:900}
-
-.bar{
-  height:12px;
-  background:#e5e7eb;
-  border-radius:99px;
-  overflow:hidden;
-  margin-top:8px
-}
-
-.bar>div{
-  height:100%;
-  background:#111;
-  border-radius:99px;
-  width:0
-}
-
-.modal{
-  position:fixed;
-  inset:0;
-  background:#0008;
-  display:none;
-  align-items:flex-end;
-  z-index:50
-}
-
+.row{display:flex;gap:8px;align-items:center;justify-content:space-between}
+.bar{height:12px;background:#e5e7eb;border-radius:99px;overflow:hidden}
+.fill{height:100%;background:#111827;width:0}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;position:fixed;bottom:0;left:0;right:0;background:#ffffffee;padding:8px;max-width:760px;margin:auto;border-top:1px solid #e5e7eb;backdrop-filter:blur(8px)}
+.tab{background:#f3f4f6}
+.tab.active{background:#111827;color:white}
+.section{display:none}
+.section.active{display:block}
+.item{padding:11px 0;border-bottom:1px solid #eee}
+.item:last-child{border-bottom:0}
+.modal{position:fixed;inset:0;background:#0008;display:none;align-items:flex-end;justify-content:center;z-index:10}
 .modal.open{display:flex}
-
-.sheet{
-  background:#fff;
-  width:100%;
-  max-height:94vh;
-  overflow:auto;
-  border-radius:24px 24px 0 0;
-  padding:18px 16px 35px
-}
-
-.photoBox{
-  border:2px dashed #d1d5db;
-  border-radius:20px;
-  padding:17px;
-  margin:10px 0;
-  text-align:center
-}
-
-.photoBox input{
-  border:0;
-  padding:5px
-}
-
-.photoName{
-  font-size:14px;
-  color:#4b5563;
-  margin-top:7px;
-  word-break:break-all
-}
-
-.result{
-  background:#f3f4f6;
-  border-radius:18px;
-  padding:16px;
-  margin-top:15px
-}
-
-.kv{
-  display:grid;
-  grid-template-columns:1fr 1.25fr;
-  gap:10px;
-  padding:8px 0;
-  border-bottom:1px solid #ddd;
-  align-items:center
-}
-
-.kv:last-child{border-bottom:0}
-
-.kv input{
-  padding:10px 11px
-}
-
-.status{
-  padding:12px 14px;
-  border-radius:14px;
-  background:#f3f4f6;
-  margin-top:12px;
-  line-height:1.4
-}
-
-.warn{
-  background:#fff7ed;
-  color:#9a3412
-}
-
-.ok{
-  background:#ecfdf5;
-  color:#065f46
-}
-
-.error{
-  background:#fef2f2;
-  color:#991b1b
-}
-
-.close{
-  float:right;
-  background:#e5e7eb;
-  border-radius:50%;
-  width:42px;
-  height:42px;
-  padding:0;
-  font-size:24px
-}
-
-.tabs{
-  display:flex;
-  gap:8px;
-  overflow:auto;
-  margin-bottom:14px
-}
-
-.tab{
-  white-space:nowrap;
-  background:#e5e7eb;
-  padding:10px 14px;
-  border-radius:999px
-}
-
-.tab.active{
-  background:#111;
-  color:#fff
-}
-
+.sheet{background:white;width:min(760px,100%);max-height:92vh;overflow:auto;border-radius:22px 22px 0 0;padding:18px}
+.status{padding:10px;border-radius:12px;background:#f3f4f6;font-size:13px;white-space:pre-wrap}
+.ok{background:#dcfce7;color:#166534}
+.warn{background:#fef3c7;color:#92400e}
+.preview{width:100%;max-height:220px;object-fit:contain;border-radius:12px;background:#f3f4f6;margin-top:8px}
 .hidden{display:none!important}
-
-.item{
-  display:flex;
-  justify-content:space-between;
-  gap:10px;
-  padding:11px 0;
-  border-bottom:1px solid #eee
+.small{font-size:12px}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.actions button{flex:1}
+@media(min-width:600px){
+.app{padding-top:28px}
+.tabs{position:static;border:0;background:transparent;padding:0;margin-top:18px}
+.tabs .tab{padding:12px}
 }
-
-.small{font-size:13px}
-.danger{color:#991b1b}
 </style>
 </head>
 
 <body>
 
-<header>
-  <h1>Мой КБЖУ</h1>
-  <p>Калории, белки, жиры и углеводы</p>
-</header>
+<div class="app">
 
-<main>
-
-<div class="tabs">
-  <button class="tab active" onclick="showTab('home',this)">Сегодня</button>
-  <button class="tab" onclick="showTab('profile',this)">Профиль</button>
-  <button class="tab" onclick="showTab('measure',this)">Измерения</button>
-  <button class="tab" onclick="showTab('plan',this)">План</button>
+<div class="top">
+<div>
+<h1>Мой КБЖУ</h1>
+<div class="sub">Калории и питание</div>
+</div>
+<button class="secondary" id="profileBtn">Профиль</button>
 </div>
 
-
-<!-- ===================== ГЛАВНАЯ ===================== -->
-
-<section id="home">
+<section id="home" class="section active">
 
 <div class="card">
+<div class="sub">Цель на сегодня</div>
 
-<h2>Сегодня</h2>
-
-<div class="grid">
-
-<div>
-<div class="muted">Цель</div>
+<div class="row">
 <div class="big" id="targetKcal">2000</div>
-<div class="muted">ккал</div>
-</div>
-
-<div>
-<div class="muted">Съедено</div>
-<div class="big" id="eatenKcal">0</div>
-<div class="muted">ккал</div>
-</div>
-
+<div>ккал</div>
 </div>
 
 <div class="bar">
-<div id="kcalBar"></div>
+<div class="fill" id="kcalFill"></div>
 </div>
 
-<div class="grid" style="margin-top:16px">
-
-<div>
-Белки: <b id="homeP">0</b> г
+<div class="row small" style="margin-top:7px">
+<span>Съедено: <b id="eatenKcal">0</b></span>
+<span>Осталось: <b id="leftKcal">2000</b></span>
+</div>
 </div>
 
-<div>
-Жиры: <b id="homeF">0</b> г
+<div class="grid3">
+
+<div class="card">
+<div class="sub">Белки</div>
+<b id="pTotal">0</b> г
 </div>
 
-<div>
-Углеводы: <b id="homeC">0</b> г
+<div class="card">
+<div class="sub">Жиры</div>
+<b id="fTotal">0</b> г
 </div>
 
-<div>
-Осталось: <b id="remainKcal">2000</b> ккал
+<div class="card">
+<div class="sub">Углеводы</div>
+<b id="cTotal">0</b> г
 </div>
 
 </div>
-
-</div>
-
 
 <div class="card">
 
-<h2>Добавить продукт</h2>
-
-<button class="primary" onclick="openModal()">
-📷 Распознать по фото
-</button>
-
-<div style="height:9px"></div>
-
-<button
-class="secondary"
-style="width:100%"
-onclick="manualAdd()">
-✏️ Ввести вручную
-</button>
-
+<div class="row">
+<h3 style="margin:0">Сегодня</h3>
+<button class="primary" id="manualBtn">+ Добавить</button>
 </div>
 
-
-<div class="card">
-
-<h2>Сегодняшний рацион</h2>
-
-<div id="foodList">
-<div class="muted">
+<div id="foodList" class="muted" style="margin-top:8px">
 Пока ничего не добавлено.
-</div>
 </div>
 
 </div>
@@ -340,86 +119,166 @@ onclick="manualAdd()">
 </section>
 
 
-<!-- ===================== ПРОФИЛЬ ===================== -->
-
-<section id="profile" class="hidden">
+<section id="add" class="section">
 
 <div class="card">
 
-<h2>Мой профиль</h2>
+<h2>Добавить продукт</h2>
 
-<label>Имя</label>
+<div class="grid">
 
-<input
-id="name"
-placeholder="Например, Сергей">
+<div>
+<label>Название</label>
+<input id="foodName" placeholder="Например, йогурт">
+</div>
+
+<div>
+<label>Количество, г</label>
+<input id="foodGrams" type="number" inputmode="decimal" value="100">
+</div>
+
+<div>
+<label>Ккал на 100 г</label>
+<input id="foodKcal" type="number" inputmode="decimal">
+</div>
+
+<div>
+<label>Белки на 100 г</label>
+<input id="foodP" type="number" inputmode="decimal">
+</div>
+
+<div>
+<label>Жиры на 100 г</label>
+<input id="foodF" type="number" inputmode="decimal">
+</div>
+
+<div>
+<label>Углеводы на 100 г</label>
+<input id="foodC" type="number" inputmode="decimal">
+</div>
+
+</div>
+
+<div class="actions" style="margin-top:12px">
+
+<button class="primary" id="saveFood">
+Добавить
+</button>
+
+<button class="secondary" id="photoBtn">
+📷 Распознать по фото
+</button>
+
+</div>
+
+</div>
+
+</section>
+
+
+<section id="stats" class="section">
+
+<div class="card">
+
+<h2>Измерения</h2>
+
+<div class="grid">
+
+<div>
+<label>Вес, кг</label>
+<input id="mWeight" type="number" inputmode="decimal">
+</div>
+
+<div>
+<label>Талия, см</label>
+<input id="mWaist" type="number" inputmode="decimal">
+</div>
+
+</div>
+
+<button class="primary" id="saveMeasure" style="margin-top:12px;width:100%">
+Сохранить измерение
+</button>
+
+<div id="measureList" style="margin-top:10px"></div>
+
+</div>
+
+</section>
+
+
+<div class="tabs">
+
+<button class="tab active" data-tab="home">
+Главная
+</button>
+
+<button class="tab" data-tab="add">
+Добавить
+</button>
+
+<button class="tab" data-tab="stats">
+Измерения
+</button>
+
+</div>
+
+</div>
+
+
+<!-- PROFILE -->
+
+<div class="modal" id="profileModal">
+
+<div class="sheet">
+
+<div class="row">
+
+<h2>Профиль</h2>
+
+<button class="secondary" data-close="profileModal">
+Закрыть
+</button>
+
+</div>
 
 
 <div class="grid">
 
 <div>
+<label>Имя</label>
+<input id="prName">
+</div>
 
+<div>
 <label>Пол</label>
 
-<select id="sex">
-
-<option value="male">
-Мужской
-</option>
-
-<option value="female">
-Женский
-</option>
-
+<select id="prSex">
+<option value="male">Мужчина</option>
+<option value="female">Женщина</option>
 </select>
 
 </div>
 
-
 <div>
-
 <label>Возраст</label>
-
-<input
-id="age"
-type="number"
-inputmode="numeric"
-value="32">
-
+<input id="prAge" type="number" inputmode="numeric">
 </div>
 
-
 <div>
-
 <label>Рост, см</label>
-
-<input
-id="height"
-type="number"
-inputmode="decimal"
-value="176">
-
+<input id="prHeight" type="number" inputmode="decimal">
 </div>
-
 
 <div>
-
 <label>Вес, кг</label>
-
-<input
-id="weight"
-type="number"
-inputmode="decimal"
-value="90">
-
+<input id="prWeight" type="number" inputmode="decimal">
 </div>
 
-</div>
-
-
+<div>
 <label>Активность</label>
 
-<select id="activity">
+<select id="prActivity">
 
 <option value="1.2">
 Минимальная
@@ -429,7 +288,7 @@ value="90">
 Лёгкая
 </option>
 
-<option value="1.55" selected>
+<option value="1.55">
 Средняя
 </option>
 
@@ -437,19 +296,18 @@ value="90">
 Высокая
 </option>
 
-<option value="1.9">
-Очень высокая
-</option>
-
 </select>
 
+</div>
+
+<div>
 
 <label>Цель</label>
 
-<select id="goal">
+<select id="prGoal">
 
 <option value="loss">
-Снижение веса
+Похудение
 </option>
 
 <option value="maintain">
@@ -457,404 +315,146 @@ value="90">
 </option>
 
 <option value="gain">
-Набор веса
+Набор
 </option>
 
 </select>
 
+</div>
 
-<button
-class="primary"
-style="margin-top:14px"
-onclick="saveProfile()">
+</div>
 
+
+<div id="profileCalc" class="status" style="margin-top:12px">
+Введите параметры.
+</div>
+
+<button class="primary" id="saveProfile" style="width:100%;margin-top:10px">
 Сохранить профиль
-
-</button>
-
-
-<div
-id="profileStatus"
-class="status">
-</div>
-
-</div>
-
-</section>
-
-
-<!-- ===================== ИЗМЕРЕНИЯ ===================== -->
-
-<section id="measure" class="hidden">
-
-<div class="card">
-
-<h2>Измерения</h2>
-
-<label>Вес, кг</label>
-
-<input
-id="mWeight"
-type="number"
-inputmode="decimal">
-
-
-<label>Талия, см</label>
-
-<input
-id="mWaist"
-type="number"
-inputmode="decimal">
-
-
-<button
-class="primary"
-style="margin-top:14px"
-onclick="saveMeasure()">
-
-Сохранить измерение
-
 </button>
 
 </div>
 
-
-<div class="card">
-
-<h2>История</h2>
-
-<div id="measureList"></div>
-
 </div>
 
-</section>
 
+<!-- PHOTO -->
 
-<!-- ===================== ПЛАН ===================== -->
-
-<section id="plan" class="hidden">
-
-<div class="card">
-
-<h2>Бюджет калорий</h2>
-
-<p class="muted">
-Например, 1500 × 7 = 10500 ккал.
-</p>
-
-
-<label>
-Количество дней
-</label>
-
-<input
-id="planDays"
-type="number"
-value="7">
-
-
-<label>
-План ккал в день
-</label>
-
-<input
-id="planKcal"
-type="number"
-value="1500">
-
-
-<button
-class="primary"
-style="margin-top:14px"
-onclick="calcPlan()">
-
-Рассчитать
-
-</button>
-
-
-<div
-id="planResult"
-class="status">
-</div>
-
-</div>
-
-</section>
-
-</main>
-
-
-<!-- ===================== OCR MODAL ===================== -->
-
-<div
-class="modal"
-id="modal">
+<div class="modal" id="photoModal">
 
 <div class="sheet">
 
-<button
-class="close"
-onclick="closeModal()">
-×
+<div class="row">
+
+<h2>Распознавание</h2>
+
+<button class="secondary" data-close="photoModal">
+Закрыть
 </button>
 
+</div>
 
-<h2>
-Распознавание продукта
-</h2>
 
-<p class="muted">
-Можно загрузить одну или две фотографии.
-Они анализируются вместе.
+<p class="small muted">
+Можно добавить одну или две фотографии.
+Приложение сначала распознаёт текст, затем ищет значения КБЖУ.
 </p>
 
 
-<div class="photoBox">
-
-<h3>
-Фото 1
-</h3>
-
-<input
-id="photo1"
-type="file"
-accept="image/*"
-capture="environment"
-onchange="fileChanged(1)">
-
-<div
-class="photoName"
-id="photoName1">
-</div>
-
-</div>
-
-
-<div class="photoBox">
-
-<h3>
-Фото 2 — по желанию
-</h3>
-
-<input
-id="photo2"
-type="file"
-accept="image/*"
-capture="environment"
-onchange="fileChanged(2)">
-
-<div
-class="photoName"
-id="photoName2">
-</div>
-
-</div>
-
-
 <label>
-Название продукта
+Фото 1 — таблица питания
 </label>
 
-<input
-id="productName"
-placeholder="Например, San Fabio">
+<input id="photo1" type="file" accept="image/*" capture="environment">
+
+<img id="prev1" class="preview hidden">
 
 
-<label>
-Вес порции, г
+<label style="margin-top:12px">
+Фото 2 — упаковка / другая сторона
 </label>
 
-<input
-id="portion"
-type="number"
-inputmode="decimal"
-value="100">
+<input id="photo2" type="file" accept="image/*" capture="environment">
+
+<img id="prev2" class="preview hidden">
 
 
-<button
-class="primary"
-style="margin-top:14px"
-onclick="recognizeProduct()">
-
-🔎 Распознать КБЖУ
-
+<button class="primary" id="recognizeBtn" style="width:100%;margin-top:14px">
+Распознать
 </button>
 
 
-<div
-id="ocrStatus"
-class="status">
-
+<div id="ocrStatus" class="status" style="margin-top:10px">
 Готово к распознаванию.
-
 </div>
 
 
-<div class="result">
+<div id="ocrRaw" class="status hidden" style="margin-top:8px"></div>
 
 
-<div class="kv">
-
-<span>
-Ккал / 100 г
-</span>
-
-<input
-id="rKcal"
-type="number"
-step="0.1"
-placeholder="—">
-
-</div>
-
-
-<div class="kv">
-
-<span>
-кДж / 100 г
-</span>
-
-<input
-id="rKj"
-type="number"
-step="0.1"
-placeholder="—">
-
-</div>
-
-
-<div class="kv">
-
-<span>
-Белки, г
-</span>
-
-<input
-id="rP"
-type="number"
-step="0.1"
-placeholder="—">
-
-</div>
-
-
-<div class="kv">
-
-<span>
-Жиры, г
-</span>
-
-<input
-id="rF"
-type="number"
-step="0.1"
-placeholder="—">
-
-</div>
-
-
-<div class="kv">
-
-<span>
-Углеводы, г
-</span>
-
-<input
-id="rC"
-type="number"
-step="0.1"
-placeholder="—">
-
-</div>
-
-
-<div class="kv">
-
-<span>
-Сахара, г
-</span>
-
-<input
-id="rSugar"
-type="number"
-step="0.1"
-placeholder="—">
-
-</div>
-
-
-<div class="kv">
-
-<span>
-Клетчатка, г
-</span>
-
-<input
-id="rFiber"
-type="number"
-step="0.1"
-placeholder="—">
-
-</div>
-
-
-<div class="kv">
-
-<span>
-Соль, г
-</span>
-
-<input
-id="rSalt"
-type="number"
-step="0.1"
-placeholder="—">
-
-</div>
-
-</div>
-
-
-<div
-id="ocrCheck"
-class="status">
-</div>
-
-
-<button
-class="primary"
-style="margin-top:14px"
-onclick="addRecognized()">
-
-＋ Добавить в сегодняшний рацион
-
+<button class="secondary" id="rawBtn" style="width:100%;margin-top:8px">
+Показать сырой OCR-текст
 </button>
 
 
-<button
-class="secondary"
-style="width:100%;margin-top:9px"
-onclick="showRawOCR()">
+<div id="resultBox" class="hidden">
 
-Показать текст OCR для проверки
+<h3>Проверь результат</h3>
 
+<div class="grid">
+
+<div>
+<label>Название</label>
+<input id="rName">
+</div>
+
+<div>
+<label>Ккал / 100 г</label>
+<input id="rKcal" type="number" step="0.1">
+</div>
+
+<div>
+<label>кДж / 100 г</label>
+<input id="rKj" type="number" step="0.1">
+</div>
+
+<div>
+<label>Белки, г</label>
+<input id="rP" type="number" step="0.1">
+</div>
+
+<div>
+<label>Жиры, г</label>
+<input id="rF" type="number" step="0.1">
+</div>
+
+<div>
+<label>Углеводы, г</label>
+<input id="rC" type="number" step="0.1">
+</div>
+
+<div>
+<label>Сахара, г</label>
+<input id="rS" type="number" step="0.1">
+</div>
+
+<div>
+<label>Клетчатка, г</label>
+<input id="rFiber" type="number" step="0.1">
+</div>
+
+<div>
+<label>Соль, г</label>
+<input id="rSalt" type="number" step="0.01">
+</div>
+
+</div>
+
+<button class="primary" id="addRecognized" style="width:100%;margin-top:12px">
+Добавить продукт
 </button>
 
-
-<pre
-id="rawOCR"
-class="hidden"
-style="
-white-space:pre-wrap;
-background:#111;
-color:#eee;
-border-radius:14px;
-padding:12px;
-font-size:12px;
-max-height:260px;
-overflow:auto
-"></pre>
+</div>
 
 </div>
 
@@ -863,506 +463,215 @@ overflow:auto
 
 <script>
 
-/* =========================================================
-   МОЙ КБЖУ — V8
-   ========================================================= */
+(function(){
 
-const KEY="my_kbju_v8";
-const OLD_KEY="my_kbju_v7";
+"use strict";
 
-
-function defaultState(){
-
-return {
-
-profile:{
-name:"",
-sex:"male",
-age:32,
-height:176,
-weight:90,
-activity:1.55,
-goal:"loss"
-},
-
-foods:[],
-measures:[],
-
-plan:{
-days:7,
-kcal:1500
-}
-
-};
-
-}
-
-
-function loadState(){
-
-const base=defaultState();
-
-let old=null;
-
-try{
-
-old=JSON.parse(
-localStorage.getItem(KEY)||"null"
-);
-
-}catch(e){}
-
-if(!old){
-
-try{
-
-old=JSON.parse(
-localStorage.getItem(OLD_KEY)||"null"
-);
-
-}catch(e){}
-
-}
-
-
-if(!old || typeof old!=="object")
-return base;
-
-
-const s=defaultState();
-
-
-if(
-old.profile &&
-typeof old.profile==="object"
-){
-
-s.profile={
-...s.profile,
-...old.profile
-};
-
-}
-
-
-if(Array.isArray(old.foods)){
-
-s.foods=old.foods.filter(
-x=>x && typeof x==="object"
-);
-
-}
-
-
-if(Array.isArray(old.measures)){
-
-s.measures=old.measures.filter(
-x=>x && typeof x==="object"
-);
-
-}
-
-
-if(
-old.plan &&
-typeof old.plan==="object"
-){
-
-s.plan={
-...s.plan,
-...old.plan
-};
-
-}
-
-
-s.profile.age=
-Number(s.profile.age)||32;
-
-s.profile.height=
-Number(s.profile.height)||176;
-
-s.profile.weight=
-Number(s.profile.weight)||90;
-
-s.profile.activity=
-Number(s.profile.activity)||1.55;
-
-
-if(
-!["male","female"].includes(
-s.profile.sex
-)
-){
-
-s.profile.sex="male";
-
-}
-
-
-if(
-!["loss","maintain","gain"]
-.includes(s.profile.goal)
-){
-
-s.profile.goal="loss";
-
-}
-
-
-return s;
-
-}
-
+const KEY="my_kbju_clean_v1";
 
 let state=loadState();
 
-let rawOCRText="";
-
 let worker=null;
+
+let rawOCRText="";
 
 
 function $(id){
-
 return document.getElementById(id);
-
 }
 
 
-function save(){
+function num(v){
 
-try{
-
-localStorage.setItem(
-KEY,
-JSON.stringify(state)
+const n=parseFloat(
+String(v??"").replace(",",".")
 );
 
-}catch(e){
-
-console.error(e);
-
-}
-
-}
-
-
-function showTab(id,btn){
-
-document
-.querySelectorAll("main>section")
-.forEach(
-x=>x.classList.add("hidden")
-);
-
-const section=$(id);
-
-if(section)
-section.classList.remove("hidden");
-
-
-document
-.querySelectorAll(".tab")
-.forEach(
-x=>x.classList.remove("active")
-);
-
-if(btn)
-btn.classList.add("active");
-
-
-if(id==="home")
-render();
-
-if(id==="measure")
-renderMeasures();
-
-}
-
-
-function openModal(){
-
-$("modal")
-.classList.add("open");
-
-}
-
-
-function closeModal(){
-
-$("modal")
-.classList.remove("open");
-
-}
-
-
-function fileChanged(n){
-
-const f=
-$("photo"+n).files[0];
-
-$("photoName"+n)
-.textContent=
-f ? f.name : "";
-
-}
-
-
-/* =========================================================
-   РАСЧЁТ КАЛОРИЙ
-   ========================================================= */
-
-function calcTarget(){
-
-const p=state.profile;
-
-const age=
-Number(p.age)||30;
-
-const h=
-Number(p.height)||176;
-
-const w=
-Number(p.weight)||90;
-
-
-let bmr;
-
-if(p.sex==="female"){
-
-bmr=
-10*w+
-6.25*h-
-5*age-
-161;
-
-}else{
-
-bmr=
-10*w+
-6.25*h-
-5*age+
-5;
-
-}
-
-
-let t=
-bmr*
-(Number(p.activity)||1.55);
-
-
-if(p.goal==="loss")
-t-=400;
-
-
-if(p.goal==="gain")
-t+=300;
-
-
-return Math.max(
-1200,
-Math.round(t)
-);
-
-}
-
-
-/* =========================================================
-   ПРОФИЛЬ
-   ========================================================= */
-
-function saveProfile(){
-
-state.profile.name=
-$("name").value.trim();
-
-state.profile.sex=
-$("sex").value;
-
-state.profile.age=
-Number($("age").value)||30;
-
-state.profile.height=
-Number($("height").value)||176;
-
-state.profile.weight=
-Number($("weight").value)||90;
-
-state.profile.activity=
-Number($("activity").value)||1.55;
-
-state.profile.goal=
-$("goal").value;
-
-
-save();
-
-render();
-
-
-$("profileStatus").className=
-"status ok";
-
-$("profileStatus").textContent=
-"Профиль сохранён. Цель рассчитана автоматически.";
-
-}
-
-
-function loadProfile(){
-
-const p=state.profile;
-
-$("name").value=
-p.name||"";
-
-$("sex").value=
-p.sex||"male";
-
-$("age").value=
-p.age||32;
-
-$("height").value=
-p.height||176;
-
-$("weight").value=
-p.weight||90;
-
-$("activity").value=
-p.activity||1.55;
-
-$("goal").value=
-p.goal||"loss";
-
-}
-
-
-/* =========================================================
-   УТИЛИТЫ
-   ========================================================= */
-
-function num(x){
-
-const n=Number(x);
-
-return Number.isFinite(n)
-?n
-:0;
-
-}
-
-
-function fmt(x){
-
-return num(x).toFixed(1);
+return Number.isFinite(n)?n:0;
 
 }
 
 
 function esc(s){
 
-return String(s||"")
-.replace(
+return String(s??"").replace(
 /[&<>"']/g,
 m=>({
 "&":"&amp;",
 "<":"&lt;",
 ">":"&gt;",
 '"':"&quot;",
-"'":"&#039;"
+"'":"&#39;"
 }[m])
 );
 
 }
 
 
-/* =========================================================
-   ОТРИСОВКА
-   ========================================================= */
+function today(){
+
+return new Date().toISOString().slice(0,10);
+
+}
+
+
+function loadState(){
+
+try{
+
+const x=JSON.parse(
+localStorage.getItem(KEY)||"null"
+);
+
+if(x)return x;
+
+}catch(e){}
+
+return {
+
+profile:{
+name:"",
+sex:"male",
+age:30,
+height:175,
+weight:90,
+activity:1.2,
+goal:"loss",
+target:2000
+},
+
+foods:[],
+
+measurements:[]
+
+};
+
+}
+
+
+function saveState(){
+
+localStorage.setItem(
+KEY,
+JSON.stringify(state)
+);
+
+}
+
+
+function calcTarget(p){
+
+const age=num(p.age)||30;
+
+const h=num(p.height)||175;
+
+const w=num(p.weight)||90;
+
+
+let bmr=
+
+p.sex==="female"
+
+?
+
+10*w+6.25*h-5*age-161
+
+:
+
+10*w+6.25*h-5*age+5;
+
+
+let t=bmr*(num(p.activity)||1.2);
+
+
+if(p.goal==="loss")t-=400;
+
+if(p.goal==="gain")t+=300;
+
+
+return Math.max(
+1200,
+Math.round(t/10)*10
+);
+
+}
+
 
 function render(){
 
-loadProfile();
+state.profile.target=
+calcTarget(state.profile);
+
+saveState();
 
 
-const target=
-calcTarget();
+$("targetKcal").textContent=
+state.profile.target;
+
+
+const d=today();
+
 
 const foods=
-Array.isArray(state.foods)
-?state.foods
-:[];
-
-
-const eaten=
-foods.reduce(
-(s,x)=>s+num(x.kcal),
-0
+state.foods.filter(
+x=>x.date===d
 );
 
 
-const P=
+const sum=
 foods.reduce(
-(s,x)=>s+num(x.p),
-0
+(a,x)=>({
+
+kcal:a.kcal+num(x.kcal),
+
+p:a.p+num(x.p),
+
+f:a.f+num(x.f),
+
+c:a.c+num(x.c)
+
+}),
+
+{
+kcal:0,
+p:0,
+f:0,
+c:0
+}
+
 );
 
 
-const F=
-foods.reduce(
-(s,x)=>s+num(x.f),
-0
-);
+$("eatenKcal").textContent=
+Math.round(sum.kcal);
 
 
-const C=
-foods.reduce(
-(s,x)=>s+num(x.c),
-0
-);
-
-
-$("targetKcal")
-.textContent=target;
-
-
-$("eatenKcal")
-.textContent=
-Math.round(eaten);
-
-
-$("remainKcal")
-.textContent=
+$("leftKcal").textContent=
 Math.max(
 0,
-Math.round(target-eaten)
+Math.round(
+state.profile.target-sum.kcal
+)
 );
 
 
-$("kcalBar")
-.style.width=
+$("pTotal").textContent=
+Math.round(sum.p*10)/10;
+
+
+$("fTotal").textContent=
+Math.round(sum.f*10)/10;
+
+
+$("cTotal").textContent=
+Math.round(sum.c*10)/10;
+
+
+$("kcalFill").style.width=
 Math.min(
 100,
-target
-?eaten/target*100
-:0
+sum.kcal/state.profile.target*100
 )+"%";
-
-
-$("homeP")
-.textContent=
-Math.round(P);
-
-
-$("homeF")
-.textContent=
-Math.round(F);
-
-
-$("homeC")
-.textContent=
-Math.round(C);
 
 
 $("foodList").innerHTML=
@@ -1376,31 +685,19 @@ x=>`
 
 <div class="item">
 
-<span>
+<div class="row">
 
-<b>
-${esc(x.name||"Продукт")}
-</b>
+<b>${esc(x.name)}</b>
 
-<br>
+<span>${Math.round(x.kcal)} ккал</span>
 
-<span class="muted">
+</div>
 
-${num(x.amount)||100} г
+<div class="small muted">
 
-· Б ${fmt(x.p)}
+${x.grams} г · Б ${x.p} · Ж ${x.f} · У ${x.c}
 
-· Ж ${fmt(x.f)}
-
-· У ${fmt(x.c)}
-
-</span>
-
-</span>
-
-<b>
-${Math.round(num(x.kcal))} ккал
-</b>
+</div>
 
 </div>
 
@@ -1409,1109 +706,395 @@ ${Math.round(num(x.kcal))} ккал
 
 :
 
-"<div class='muted'>Пока ничего не добавлено.</div>";
+"Пока ничего не добавлено.";
+
+
+renderMeasures();
 
 }
 
 
-/* =========================================================
-   РУЧНОЕ ДОБАВЛЕНИЕ
-   ========================================================= */
+function showTab(id){
 
-function manualAdd(){
+document
+.querySelectorAll(".section")
+.forEach(
+x=>x.classList.remove("active")
+);
+
+
+document
+.querySelectorAll(".tab")
+.forEach(
+x=>x.classList.remove("active")
+);
+
+
+$(id).classList.add("active");
+
+
+document
+.querySelector(
+`.tab[data-tab="${id}"]`
+)
+.classList.add("active");
+
+}
+
+
+document
+.querySelectorAll(".tab")
+.forEach(
+b=>b.addEventListener(
+"click",
+()=>showTab(b.dataset.tab)
+)
+);
+
+
+function openModal(id){
+
+$(id).classList.add("open");
+
+}
+
+
+function closeModal(id){
+
+$(id).classList.remove("open");
+
+}
+
+
+document
+.querySelectorAll("[data-close]")
+.forEach(
+b=>b.addEventListener(
+"click",
+()=>closeModal(b.dataset.close)
+)
+);
+
+
+$("profileBtn").onclick=()=>{
+
+const p=state.profile;
+
+
+$("prName").value=p.name||"";
+
+$("prSex").value=p.sex||"male";
+
+$("prAge").value=p.age||"";
+
+$("prHeight").value=p.height||"";
+
+$("prWeight").value=p.weight||"";
+
+$("prActivity").value=
+String(p.activity||1.2);
+
+$("prGoal").value=
+p.goal||"loss";
+
+
+updateProfileCalc();
+
+openModal("profileModal");
+
+};
+
+
+[
+"prSex",
+"prAge",
+"prHeight",
+"prWeight",
+"prActivity",
+"prGoal"
+]
+.forEach(
+id=>$(id).addEventListener(
+"input",
+updateProfileCalc
+)
+);
+
+
+function updateProfileCalc(){
+
+const p={
+
+sex:$("prSex").value,
+
+age:$("prAge").value,
+
+height:$("prHeight").value,
+
+weight:$("prWeight").value,
+
+activity:$("prActivity").value,
+
+goal:$("prGoal").value
+
+};
+
+
+const t=calcTarget(p);
+
+
+$("profileCalc").textContent=
+`Расчётная дневная цель: ${t} ккал`;
+
+}
+
+
+$("saveProfile").onclick=()=>{
+
+state.profile={
+
+name:$("prName").value.trim(),
+
+sex:$("prSex").value,
+
+age:num($("prAge").value),
+
+height:num($("prHeight").value),
+
+weight:num($("prWeight").value),
+
+activity:num($("prActivity").value),
+
+goal:$("prGoal").value,
+
+target:0
+
+};
+
+
+render();
+
+closeModal("profileModal");
+
+};
+
+
+$("manualBtn").onclick=()=>{
+
+showTab("add");
+
+$("foodName").focus();
+
+};
+
+
+$("photoBtn").onclick=()=>{
+
+openModal("photoModal");
+
+};
+
+
+$("saveFood").onclick=()=>{
 
 const name=
-prompt("Название продукта");
+$("foodName").value.trim()||"Продукт";
 
-if(!name)
+
+const grams=
+num($("foodGrams").value)||100;
+
+
+const k100=
+num($("foodKcal").value);
+
+
+const p100=
+num($("foodP").value);
+
+
+const f100=
+num($("foodF").value);
+
+
+const c100=
+num($("foodC").value);
+
+
+if(!k100){
+
+alert("Укажи калории на 100 г.");
+
 return;
 
-
-const kcal=
-num(
-prompt(
-"Ккал на 100 г",
-"100"
-)
-);
-
-
-const p=
-num(
-prompt(
-"Белки на 100 г",
-"0"
-)
-);
-
-
-const f=
-num(
-prompt(
-"Жиры на 100 г",
-"0"
-)
-);
-
-
-const c=
-num(
-prompt(
-"Углеводы на 100 г",
-"0"
-)
-);
-
-
-const amount=
-num(
-prompt(
-"Вес порции, г",
-"100"
-)
-)||100;
-
-
-addFood(
-name,
-kcal,
-p,
-f,
-c,
-amount
-);
-
 }
-
-
-function addFood(
-name,
-kcal,
-p,
-f,
-c,
-amount
-){
-
-const m=
-(num(amount)||100)/100;
 
 
 state.foods.push({
 
-name:String(
-name||"Продукт"
-),
+name,
 
-amount:
-num(amount)||100,
+grams,
 
-kcal:
-num(kcal)*m,
+kcal:k100*grams/100,
 
-p:
-num(p)*m,
+p:p100*grams/100,
 
-f:
-num(f)*m,
+f:f100*grams/100,
 
-c:
-num(c)*m,
+c:c100*grams/100,
 
-date:
-new Date()
-.toISOString()
-.slice(0,10)
+date:today()
 
 });
 
 
-save();
+saveState();
 
 render();
 
-}
 
-
-/* =========================================================
-   OCR — СЛОВАРЬ
-   ========================================================= */
-
-const TERMS={
-
-energy:[
-"energie",
-"energy",
-"energi"
-],
-
-kcal:[
-"kcal",
-"ккал",
-"calories",
-"kalorien"
-],
-
-kj:[
-"kj",
-"кдж",
-"kilojoule"
-],
-
-fat:[
-"fett",
-"fat",
-"жир",
-"жири"
-],
-
-sat:[
-"gesättigte fettsäuren",
-"gesattigte fettsauren",
-"saturated fat",
-"насыщенные",
-"насыщен"
-],
-
-carbs:[
-"kohlenhydrate",
-"kohlenhydrat",
-"carbohydrate",
-"carbohydrates",
-"углевод",
-"вуглевод"
-],
-
-sugar:[
-"davon zucker",
-"zucker",
-"sugar",
-"сахар",
-"цукор"
-],
-
-fiber:[
-"ballaststoffe",
-"ballaststoff",
-"fibre",
-"fiber",
-"клетчат",
-"клітков"
-],
-
-protein:[
-"eiweiss",
-"eiweiß",
-"protein",
-"proteins",
-"белок",
-"білок"
-],
-
-salt:[
-"salz",
-"salt",
-"соль",
-"сіль"
-]
-
-};
-
-
-/* =========================================================
-   НОРМАЛИЗАЦИЯ OCR
-   ========================================================= */
-
-function cleanOCRText(s){
-
-return String(s||"")
-
-.replace(/\u00ad/g,"")
-
-.replace(/[–—−]/g,"-")
-
-.replace(/ё/g,"е")
-
-.replace(/º/g,"0")
-
-.replace(/[|]/g," ")
-
-.replace(/\r/g,"\n");
-
-}
-
-
-/* =========================================================
-   ИЗВЛЕЧЕНИЕ ЧИСЕЛ
-   ВАЖНО:
-   5,0 = 5.0
-   0,30 = 0.30
-   143 34 = ДВА числа
-   ========================================================= */
-
-function extractNumbers(s){
-
-const str=
-String(s||"")
-.replace(/,/g,".");
-
-const re=
-/(?<![\d.])(?:\d+\.\d+|\d+)(?![\d.])/g;
-
-return [
-...str.matchAll(re)
-]
-.map(m=>Number(m[0]))
-.filter(Number.isFinite);
-
-}
-
-
-function hasTerm(s,arr){
-
-const t=
-String(s||"")
-.toLowerCase();
-
-return arr.some(
-x=>t.includes(x)
-);
-
-}
-
-
-function isPlausibleNutrient(
-v,
-key
-){
-
-if(
-!Number.isFinite(v)||
-v<0
-)
-return false;
-
-
-if(key==="salt")
-return v<=100;
-
-
-return v<=100;
-
-}
-
-
-function firstPlausible(
-arr,
-key
-){
-
-return arr.find(
-v=>isPlausibleNutrient(
-v,
-key
-)
-);
-
-}
-
-
-/* =========================================================
-   ПАРСЕР ПИТАТЕЛЬНОЙ ТАБЛИЦЫ
-   ========================================================= */
-
-function parseTable(text){
-
-const cleaned=
-cleanOCRText(text);
-
-
-const rawLines=
-cleaned
-.split("\n")
-.map(x=>x.trim())
-.filter(Boolean);
-
-
-const lines=
-rawLines.map(
-x=>
-x
-.toLowerCase()
-.replace(/\s+/g," ")
-.trim()
-);
-
-
-const out={
-
-energy:null,
-
-kcal:null,
-
-kj:null,
-
-fat:null,
-
-sat:null,
-
-carbs:null,
-
-sugar:null,
-
-fiber:null,
-
-protein:null,
-
-salt:null,
-
-qualifiers:{}
-
-};
-
-
-const keys=[
-"fat",
-"sat",
-"carbs",
-"sugar",
-"fiber",
-"protein",
-"salt",
-"kcal",
-"kj"
-];
-
-
-/* ---------------------------------------------------------
-   1. Подпись и число находятся в одной строке
-   --------------------------------------------------------- */
-
-for(
-let i=0;
-i<lines.length;
-i++
-){
-
-const line=lines[i];
-
-const ns=
-extractNumbers(line);
-
-if(!ns.length)
-continue;
-
-
-for(
-const key of keys
-){
-
-if(
-!hasTerm(
-line,
-TERMS[key]
-)
-)
-continue;
-
-
-/* Защита от перепутывания
-   углеводов и сахаров */
-
-if(
-key==="sugar" &&
-hasTerm(
-line,
-TERMS.carbs
-) &&
-!hasTerm(
-line,
 [
-"zucker",
-"davon zucker",
-"sugar",
-"сахар",
-"цукор"
+"foodName",
+"foodKcal",
+"foodP",
+"foodF",
+"foodC"
 ]
-)
-){
-
-continue;
-
-}
-
-
-/* Жиры < 0,5 */
-
-if(key==="fat"){
-
-if(
-/<\s*0[.,]5\b/.test(line)
-){
-
-out.fat=0.5;
-
-out.qualifiers.fat=
-"< 0,5 g";
-
-continue;
-
-}
-
-}
-
-
-/* kcal */
-
-if(key==="kcal"){
-
-const v=
-ns.find(
-x=>x>=1&&x<=900
-);
-
-if(v!=null)
-out.kcal=v;
-
-continue;
-
-}
-
-
-/* kJ */
-
-if(key==="kj"){
-
-const v=
-ns.find(
-x=>x>=50&&x<=4000
-);
-
-if(v!=null)
-out.kj=v;
-
-continue;
-
-}
-
-
-/* Остальные нутриенты */
-
-const v=
-firstPlausible(
-ns,
-key
-);
-
-if(v!=null)
-out[key]=v;
-
-}
-
-}
-
-
-/* ---------------------------------------------------------
-   2. Энергия
-   --------------------------------------------------------- */
-
-for(
-const line of lines
-){
-
-if(
-!hasTerm(line,TERMS.energy) &&
-!hasTerm(line,TERMS.kcal) &&
-!hasTerm(line,TERMS.kj)
-)
-continue;
-
-
-const ns=
-extractNumbers(line);
-
-
-if(ns.length>=2){
-
-const kj=
-ns.find(
-v=>v>=50&&v<=4000
+.forEach(
+id=>$(id).value=""
 );
 
 
-const kcal=
-ns.find(
-v=>
-v>=1 &&
-v<=900 &&
-v!==kj
-);
+$("foodGrams").value=100;
 
 
-if(kj!=null)
-out.kj=kj;
+showTab("home");
 
+};
 
-if(kcal!=null)
-out.kcal=kcal;
 
-}
+$("saveMeasure").onclick=()=>{
 
-}
+const w=num($("mWeight").value);
 
+const waist=num($("mWaist").value);
 
-/* ---------------------------------------------------------
-   3. Подпись и значение на соседних строках
-   --------------------------------------------------------- */
 
-for(
-let i=0;
-i<lines.length;
-i++
-){
+if(!w&&!waist){
 
-for(
-const key of keys
-){
-
-if(
-out[key]!=null ||
-!hasTerm(
-lines[i],
-TERMS[key]
-)
-)
-continue;
-
-
-for(
-let d=1;
-d<=2;
-d++
-){
-
-const j=i+d;
-
-if(j>=lines.length)
-break;
-
-
-const next=
-lines[j];
-
-
-/* Не перескакиваем через
-   другой нутриент */
-
-if(
-keys.some(
-k=>
-k!==key &&
-hasTerm(
-next,
-TERMS[k]
-)
-) ||
-hasTerm(
-next,
-TERMS.energy
-)
-)
-break;
-
-
-const ns=
-extractNumbers(next);
-
-if(!ns.length)
-continue;
-
-
-if(key==="kcal"){
-
-const v=
-ns.find(
-x=>x>=1&&x<=900
-);
-
-if(v!=null){
-
-out.kcal=v;
-
-break;
-
-}
-
-}
-else if(key==="kj"){
-
-const v=
-ns.find(
-x=>x>=50&&x<=4000
-);
-
-if(v!=null){
-
-out.kj=v;
-
-break;
-
-}
-
-}
-else{
-
-const v=
-firstPlausible(
-ns,
-key
-);
-
-if(v!=null){
-
-out[key]=v;
-
-break;
-
-}
-
-}
-
-}
-
-}
-
-}
-
-
-/* ---------------------------------------------------------
-   4. Защита от OCR-ошибок
-   --------------------------------------------------------- */
-
-if(
-out.fat!=null &&
-(out.fat<0||out.fat>100)
-)
-out.fat=null;
-
-
-if(
-out.carbs!=null &&
-(out.carbs<0||out.carbs>100)
-)
-out.carbs=null;
-
-
-if(
-out.sugar!=null &&
-(out.sugar<0||out.sugar>100)
-)
-out.sugar=null;
-
-
-if(
-out.fiber!=null &&
-(out.fiber<0||out.fiber>100)
-)
-out.fiber=null;
-
-
-if(
-out.protein!=null &&
-(out.protein<0||out.protein>100)
-)
-out.protein=null;
-
-
-if(
-out.salt!=null &&
-(out.salt<0||out.salt>100)
-)
-out.salt=null;
-
-
-/* ---------------------------------------------------------
-   5. Конвертация энергии
-   --------------------------------------------------------- */
-
-if(
-out.kcal==null &&
-out.kj!=null
-){
-
-out.kcal=
-out.kj/4.184;
-
-}
-
-
-if(
-out.kj==null &&
-out.kcal!=null
-){
-
-out.kj=
-out.kcal*4.184;
-
-}
-
-
-return out;
-
-}
-
-
-/* =========================================================
-   ЗАПОЛНЕНИЕ РЕЗУЛЬТАТА
-   ========================================================= */
-
-function fillResults(r){
-
-$("rKcal").value=
-r.kcal!=null
-?fmt(r.kcal)
-:"";
-
-
-$("rKj").value=
-r.kj!=null
-?fmt(r.kj)
-:"";
-
-
-$("rP").value=
-r.protein!=null
-?fmt(r.protein)
-:"";
-
-
-$("rF").value=
-r.fat!=null
-?fmt(r.fat)
-:"";
-
-
-$("rC").value=
-r.carbs!=null
-?fmt(r.carbs)
-:"";
-
-
-$("rSugar").value=
-r.sugar!=null
-?fmt(r.sugar)
-:"";
-
-
-$("rFiber").value=
-r.fiber!=null
-?fmt(r.fiber)
-:"";
-
-
-$("rSalt").value=
-r.salt!=null
-?fmt(r.salt)
-:"";
-
-
-const messages=[];
-
-
-if(r.qualifiers.fat){
-
-messages.push(
-"Жиры: "+
-r.qualifiers.fat
-);
-
-}
-
-
-if(
-r.kcal!=null &&
-r.kj!=null
-){
-
-const expected=
-r.kcal*4.184;
-
-
-if(
-Math.abs(
-expected-r.kj
-)/
-Math.max(
-1,
-r.kj
-)
-<0.08
-){
-
-messages.push(
-"✓ kcal и kJ согласуются."
-);
-
-}else{
-
-messages.push(
-"⚠️ kcal и kJ заметно отличаются — проверь таблицу."
-);
-
-}
-
-}
-
-
-if(r.protein==null)
-messages.push(
-"Белки не распознаны — их можно ввести вручную."
-);
-
-
-if(r.fat==null)
-messages.push(
-"Жиры не распознаны — их можно ввести вручную."
-);
-
-
-if(r.carbs==null)
-messages.push(
-"Углеводы не распознаны — их можно ввести вручную."
-);
-
-
-$("ocrCheck").className=
-messages.length
-?"status warn"
-:"status ok";
-
-
-$("ocrCheck").textContent=
-messages.join(" ")
-||
-"Распознавание завершено. Проверь значения перед добавлением.";
-
-}
-
-
-/* =========================================================
-   ОБРАБОТКА ФОТО
-   ========================================================= */
-
-function makeCanvas(file,mode){
-
-return new Promise(
-(resolve,reject)=>{
-
-const img=
-new Image();
-
-const url=
-URL.createObjectURL(file);
-
-
-img.onload=()=>{
-
-try{
-
-const max=2400;
-
-const scale=
-Math.min(
-max/
-Math.max(
-img.width,
-img.height
-),
-3
-);
-
-
-const w=
-Math.max(
-1,
-Math.round(
-img.width*scale
-)
-);
-
-
-const h=
-Math.max(
-1,
-Math.round(
-img.height*scale
-)
-);
-
-
-const c=
-document.createElement(
-"canvas"
-);
-
-c.width=w;
-c.height=h;
-
-
-const ctx=
-c.getContext(
-"2d",
-{
-willReadFrequently:true
-}
-);
-
-
-ctx.drawImage(
-img,
-0,
-0,
-w,
-h
-);
-
-
-if(mode==="normal"){
-
-URL.revokeObjectURL(
-url
-);
-
-resolve(c);
+alert("Введи хотя бы один показатель.");
 
 return;
 
 }
 
 
-const data=
-ctx.getImageData(
-0,
-0,
-w,
-h
-);
+state.measurements.unshift({
 
+date:new Date().toLocaleDateString("ru-RU"),
 
-const d=data.data;
+weight:w,
 
-
-for(
-let i=0;
-i<d.length;
-i+=4
-){
-
-const g=
-.299*d[i]+
-.587*d[i+1]+
-.114*d[i+2];
-
-
-let v;
-
-
-if(mode==="threshold"){
-
-v=
-g>160
-?255
-:0;
-
-}else{
-
-v=
-Math.max(
-0,
-Math.min(
-255,
-(g-128)*2.2+128
-)
-);
-
-}
-
-
-d[i]=v;
-d[i+1]=v;
-d[i+2]=v;
-
-}
-
-
-ctx.putImageData(
-data,
-0,
-0
-);
-
-
-URL.revokeObjectURL(
-url
-);
-
-resolve(c);
-
-}catch(e){
-
-URL.revokeObjectURL(
-url
-);
-
-reject(e);
-
-}
-
-};
-
-
-img.onerror=()=>{
-
-URL.revokeObjectURL(
-url
-);
-
-reject(
-new Error(
-"Не удалось открыть изображение."
-)
-);
-
-};
-
-
-img.src=url;
+waist:waist
 
 });
 
+
+saveState();
+
+render();
+
+
+$("mWeight").value="";
+
+$("mWaist").value="";
+
+};
+
+
+function renderMeasures(){
+
+$("measureList").innerHTML=
+
+state.measurements.length
+
+?
+
+state.measurements
+.slice(0,20)
+.map(
+x=>`
+
+<div class="item">
+
+${esc(x.date)}
+
+—
+
+${x.weight?x.weight+" кг":""}
+
+${x.waist?" · талия "+x.waist+" см":""}
+
+</div>
+
+`
+).join("")
+
+:
+
+"Нет записей.";
+
 }
 
 
-/* =========================================================
-   TESSERACT
-   ========================================================= */
+function preview(input,img){
 
-async function getWorker(){
+input.addEventListener(
+"change",
+()=>{
 
-if(worker)
-return worker;
+const f=
+input.files&&input.files[0];
+
+if(!f){
+
+img.classList.add("hidden");
+
+return;
+
+}
+
+img.src=
+URL.createObjectURL(f);
+
+img.classList.remove("hidden");
+
+}
+);
+
+}
+
+
+preview($("photo1"),$("prev1"));
+
+preview($("photo2"),$("prev2"));
+
+
+async function ensureTesseract(){
+
+if(window.Tesseract)return;
 
 
 $("ocrStatus").textContent=
-"Загружаю OCR…";
+"Загружаю OCR-модуль…";
 
-
-if(!window.Tesseract){
 
 await new Promise(
 (resolve,reject)=>{
 
 const s=
-document.createElement(
-"script"
-);
+document.createElement("script");
 
 
 s.src=
@@ -2523,16 +1106,25 @@ s.onload=resolve;
 
 s.onerror=()=>reject(
 new Error(
-"Не удалось загрузить OCR. Проверь интернет-соединение."
+"Не удалось загрузить OCR-модуль"
 )
 );
 
 
 document.head.appendChild(s);
 
-});
+}
+);
 
 }
+
+
+async function getWorker(){
+
+if(worker)return worker;
+
+
+await ensureTesseract();
 
 
 worker=
@@ -2546,23 +1138,14 @@ logger:m=>{
 if(m.status){
 
 $("ocrStatus").textContent=
-"OCR: "+
-m.status+
-(
-m.progress!=null
-?" "+
+m.status+" "+
 Math.round(
-m.progress*100
-)+"%"
-:""
-);
+(m.progress||0)*100
+)+"%";
 
 }
 
-},
-
-langPath:
-"https://tessdata.projectnaptha.com/4.0.0"
+}
 
 }
 );
@@ -2573,104 +1156,350 @@ return worker;
 }
 
 
-/* =========================================================
-   РАСПОЗНАВАНИЕ ОДНОГО ФОТО
-   ========================================================= */
+function extractNumbers(s){
 
-async function recognizeFile(file){
-
-const w=
-await getWorker();
-
-const texts=[];
+const str=
+String(s||"")
+.replace(/,/g,".");
 
 
-for(
-const mode of
-[
-"normal",
-"contrast",
-"threshold"
+const re=
+/(?<![\d.])(?:\d+\.\d+|\d+)(?![\d.])/g;
+
+
+return[
+...str.matchAll(re)
 ]
-){
+.map(
+m=>Number(m[0])
+)
+.filter(Number.isFinite);
 
-const canvas=
-await makeCanvas(
-file,
-mode
+}
+
+
+function lineNumbers(line){
+
+return extractNumbers(line);
+
+}
+
+
+function findLine(lines,keys){
+
+return lines.find(
+l=>keys.some(
+k=>l.toLowerCase().includes(k)
+)
+);
+
+}
+
+
+function parseTable(text){
+
+const lines=
+String(text||"")
+.split(/\n+/)
+.map(x=>x.trim())
+.filter(Boolean);
+
+
+const out={
+
+kcal:0,
+
+kj:0,
+
+p:0,
+
+f:0,
+
+c:0,
+
+s:0,
+
+fiber:0,
+
+salt:0,
+
+name:"Продукт"
+
+};
+
+
+const energyLines=
+lines.filter(
+l=>/(energie|energy|kcal|kj|kj\/|kcal\/)/i.test(l)
 );
 
 
-const res=
-await w.recognize(
-canvas
+for(const l of energyLines){
+
+const ns=lineNumbers(l);
+
+if(!ns.length)continue;
+
+
+if(/kcal/i.test(l)){
+
+const n=
+ns.find(
+x=>x>0&&x<1000
+);
+
+if(n)out.kcal=n;
+
+}
+
+
+if(/\bkj\b/i.test(l)){
+
+const n=
+ns.find(
+x=>x>0&&x<10000
+);
+
+if(n)out.kj=n;
+
+}
+
+}
+
+
+function nutrient(keys,validator){
+
+const idx=
+lines.findIndex(
+l=>keys.some(
+k=>l.toLowerCase().includes(k)
+)
+);
+
+
+if(idx<0)return 0;
+
+
+const candidates=[];
+
+
+for(
+let j=idx;
+j<=Math.min(
+lines.length-1,
+idx+1
+);
+j++
+){
+
+candidates.push(
+...lineNumbers(lines[j])
+);
+
+}
+
+
+return candidates.find(
+validator
+)||0;
+
+}
+
+
+out.f=
+nutrient(
+["fett","fat"],
+n=>n>=0&&n<=100
+);
+
+
+out.c=
+nutrient(
+[
+"kohlenhydrate",
+"carbohydrate",
+"carbohydrates",
+"carbs"
+],
+n=>n>=0&&n<=100
+);
+
+
+out.s=
+nutrient(
+[
+"davon zucker",
+"of which sugars",
+"sugars",
+"zucker"
+],
+n=>n>=0&&n<=100
+);
+
+
+out.fiber=
+nutrient(
+[
+"ballaststoffe",
+"fiber",
+"fibre"
+],
+n=>n>=0&&n<=100
+);
+
+
+out.p=
+nutrient(
+[
+"eiweiß",
+"protein",
+"proteine"
+],
+n=>n>=0&&n<=100
+);
+
+
+out.salt=
+nutrient(
+[
+"salz",
+"salt"
+],
+n=>n>=0&&n<=20
+);
+
+
+const fatLine=
+findLine(
+lines,
+["fett","fat"]
 );
 
 
 if(
-res &&
-res.data &&
-res.data.text
+fatLine &&
+/<\s*0[.,]5/i.test(fatLine)
 ){
 
-texts.push(
-res.data.text
+out.f=0.5;
+
+}
+
+
+if(!out.kcal&&out.kj)
+
+out.kcal=
+Math.round(
+out.kj/4.184*10
+)/10;
+
+
+if(!out.kj&&out.kcal)
+
+out.kj=
+Math.round(
+out.kcal*4.184
 );
 
-}
+
+return out;
 
 }
 
 
-return texts.join("\n");
+function fillResult(r){
+
+$("rName").value=
+r.name||"Продукт";
+
+$("rKcal").value=
+r.kcal||"";
+
+$("rKj").value=
+r.kj||"";
+
+$("rP").value=
+r.p||"";
+
+$("rF").value=
+r.f||"";
+
+$("rC").value=
+r.c||"";
+
+$("rS").value=
+r.s||"";
+
+$("rFiber").value=
+r.fiber||"";
+
+$("rSalt").value=
+r.salt||"";
+
+
+$("resultBox")
+.classList
+.remove("hidden");
 
 }
 
 
-/* =========================================================
-   РАСПОЗНАВАНИЕ ПРОДУКТА
-   ========================================================= */
+$("rawBtn").onclick=()=>{
 
-async function recognizeProduct(){
-
-const f1=
-$("photo1")
-.files[0];
+$("ocrRaw")
+.classList
+.toggle("hidden");
 
 
-const f2=
-$("photo2")
-.files[0];
+$("ocrRaw").textContent=
+rawOCRText||"Нет текста.";
+
+};
 
 
-if(!f1&&!f2){
+$("recognizeBtn").onclick=
+async()=>{
 
-$("ocrStatus").className=
-"status error";
+const files=[];
 
-$("ocrStatus").textContent=
-"Сначала выбери хотя бы одну фотографию.";
+
+if($("photo1").files[0])
+
+files.push(
+$("photo1").files[0]
+);
+
+
+if($("photo2").files[0])
+
+files.push(
+$("photo2").files[0]
+);
+
+
+if(!files.length){
+
+alert(
+"Добавь хотя бы одну фотографию."
+);
 
 return;
 
 }
 
 
-$("ocrStatus").className=
-"status";
-
-$("ocrStatus").textContent=
-"Начинаю распознавание…";
+$("recognizeBtn").disabled=true;
 
 
-$("ocrCheck").textContent="";
+$("resultBox")
+.classList
+.add("hidden");
 
 
 try{
 
-const files=
-[f1,f2]
-.filter(Boolean);
+const w=
+await getWorker();
 
 
 const texts=[];
@@ -2683,44 +1512,39 @@ i++
 ){
 
 $("ocrStatus").textContent=
-`Распознаю фотографию ${
-i+1
-} из ${
-files.length
-}…`;
+`Распознаю фото ${i+1} из ${files.length}…`;
+
+
+const r=
+await w.recognize(
+files[i]
+);
 
 
 texts.push(
-await recognizeFile(
-files[i]
-)
+r.data.text||""
 );
 
 }
 
 
 rawOCRText=
-texts.join(
+texts
+.join(
 "\n\n===== ФОТО =====\n\n"
 )
-.replace(
-/
-/g,
-"\n"
-);
+.replace(/\r/g,"\n");
 
 
-$("rawOCR").textContent=
-rawOCRText;
+$("ocrRaw").textContent=
+rawOCRText||"Нет текста.";
 
 
-const r=
-parseTable(
-rawOCRText
-);
+const parsed=
+parseTable(rawOCRText);
 
 
-fillResults(r);
+fillResult(parsed);
 
 
 $("ocrStatus").className=
@@ -2728,7 +1552,8 @@ $("ocrStatus").className=
 
 
 $("ocrStatus").textContent=
-"Готово. Проверь распознанные значения перед добавлением.";
+"Распознавание завершено. Проверь значения перед добавлением.";
+
 
 }catch(e){
 
@@ -2736,310 +1561,94 @@ console.error(e);
 
 
 $("ocrStatus").className=
-"status error";
+"status warn";
 
 
 $("ocrStatus").textContent=
-"Ошибка распознавания: "+
-(
-e&&e.message
-?e.message
-:String(e)
-);
+"Ошибка: "+(e.message||e);
+
+
+}finally{
+
+$("recognizeBtn").disabled=false;
 
 }
 
-}
+};
 
 
-/* =========================================================
-   ДОБАВЛЕНИЕ РАСПОЗНАННОГО ПРОДУКТА
-   ========================================================= */
-
-function addRecognized(){
+$("addRecognized").onclick=()=>{
 
 const name=
-$("productName")
-.value
-.trim()
-||
-"Продукт";
+$("rName").value.trim()||"Продукт";
 
 
-const amount=
-num(
-$("portion").value
-)||
-100;
+const grams=100;
 
 
-const kcal=
-num(
-$("rKcal").value
-);
+const k=num($("rKcal").value);
+
+const p=num($("rP").value);
+
+const f=num($("rF").value);
+
+const c=num($("rC").value);
 
 
-const p=
-num(
-$("rP").value
-);
+if(!k){
 
-
-const f=
-num(
-$("rF").value
-);
-
-
-const c=
-num(
-$("rC").value
-);
-
-
-if(
-!kcal &&
-!p &&
-!f &&
-!c
-){
-
-alert(
-"Нет распознанных значений."
-);
+alert("Не указаны калории.");
 
 return;
 
 }
 
 
-addFood(
+state.foods.push({
+
 name,
-kcal,
+
+grams,
+
+kcal:k,
+
 p,
+
 f,
+
 c,
-amount
-);
 
+date:today(),
 
-closeModal();
+extra:{
 
-}
+kj:num($("rKj").value),
 
+s:num($("rS").value),
 
-function showRawOCR(){
+fiber:num($("rFiber").value),
 
-$("rawOCR")
-.classList.toggle(
-"hidden"
-);
+salt:num($("rSalt").value)
 
 }
-
-
-/* =========================================================
-   ИЗМЕРЕНИЯ
-   ========================================================= */
-
-function saveMeasure(){
-
-const w=
-num(
-$("mWeight").value
-);
-
-
-const wa=
-num(
-$("mWaist").value
-);
-
-
-if(!w&&!wa)
-return;
-
-
-state.measures.push({
-
-date:
-new Date()
-.toLocaleDateString(
-"ru-RU"
-),
-
-weight:
-w||null,
-
-waist:
-wa||null
 
 });
 
 
-if(w)
-state.profile.weight=w;
-
-
-save();
+saveState();
 
 render();
 
-renderMeasures();
+closeModal("photoModal");
 
+showTab("home");
 
-$("mWeight").value="";
+};
 
-$("mWaist").value="";
-
-}
-
-
-function renderMeasures(){
-
-$("measureList").innerHTML=
-
-state.measures.length
-
-?
-
-state.measures
-.slice()
-.reverse()
-.map(
-x=>`
-
-<div class="item">
-
-<span>
-${esc(x.date)}
-</span>
-
-<b>
-
-${
-x.weight
-?x.weight+" кг"
-:""
-}
-
-${
-x.waist
-?" · "+x.waist+" см"
-:""
-}
-
-</b>
-
-</div>
-
-`
-)
-.join("")
-
-:
-
-"Пока нет измерений.";
-
-}
-
-
-/* =========================================================
-   ПЛАН
-   ========================================================= */
-
-function calcPlan(){
-
-const days=
-Math.max(
-1,
-num(
-$("planDays").value
-)||7
-);
-
-
-const kcal=
-Math.max(
-0,
-num(
-$("planKcal").value
-)||1500
-);
-
-
-const total=
-days*kcal;
-
-
-const eaten=
-state.foods.reduce(
-(s,x)=>s+num(x.kcal),
-0
-);
-
-
-const remaining=
-Math.max(
-0,
-total-eaten
-);
-
-
-$("planResult").textContent=
-
-`Бюджет: ${
-total.toLocaleString("ru-RU")
-} ккал. `+
-
-`Добавлено сегодня: ${
-Math.round(eaten)
-} ккал. `+
-
-`Остаток: ${
-Math.round(remaining)
-} ккал.`;
-
-}
-
-
-/* =========================================================
-   ЗАПУСК
-   ========================================================= */
-
-try{
 
 render();
 
-renderMeasures();
-
-}catch(e){
-
-console.error(
-"Ошибка запуска:",
-e
-);
-
-
-state=
-defaultState();
-
-
-try{
-
-save();
-
-render();
-
-renderMeasures();
-
-}catch(e2){
-
-console.error(e2);
-
-}
-
-}
+})();
 
 </script>
 
